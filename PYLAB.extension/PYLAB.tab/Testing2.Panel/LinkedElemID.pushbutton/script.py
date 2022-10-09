@@ -12,7 +12,7 @@ uidoc = revit.uidoc
 # Pick model elements
 try:
     with forms.WarningBar(title="Pick elements in model"):
-        wall_collector = uidoc.Selection.PickObjects(ObjectType.Element)
+        collector = uidoc.Selection.PickObjects(ObjectType.Element)
 
 except:
     print("")
@@ -20,19 +20,19 @@ except:
 # Pick linked elements
 try:
     with forms.WarningBar(title="Pick elements in linked model"):
-        wall_collector_link = uidoc.Selection.PickObjects(ObjectType.LinkedElement)
+        collector_link = uidoc.Selection.PickObjects(ObjectType.LinkedElement)
 
 except:
     print("")
 
 # Print Ids
 try:
-    for i in wall_collector:
+    for i in collector:
             print("Model element "+str(i.ElementId))
 except:
     print("No linked elements")
 try:
-    for i in wall_collector_link:
+    for i in collector_link:
             print("Linked element "+str(i.ElementId))
 except:
     print("No linked elements")

@@ -12,4 +12,45 @@ class CustomISelectionFilter(ISelectionFilter):
         return true
 ###
 
+###Elements collector
+familyinstance_collector = DB.FilteredElementCollector(revit.doc)\
+                             .OfClass(DB.FamilyInstance)\
+                             .WhereElementIsNotElementType()\
+                             .ToElements()    
+
+for i in familyinstance_collector:
+    print(i.GetType)
 ###
+
+###Multifilter
+cat_list = [BuiltInCategory.OST_Rooms, BuiltInCategory.OST_Walls, BuiltInCategory.OST_Windows, BuiltInCategory.OST_Doors]
+    typed_list = List[BuiltInCategory](cat_list)
+    filter = ElementMulticategoryFilter(typed_list)
+    output = FilteredElementCollector(doc).WherePasses(filter).ToElements()
+
+###FilteredElementCollector
+filter=ElementCategoryFilter(BuiltInCategory.OST_PipeInsulations)
+for i in FilteredElementCollector(doc).OfClass(ElementType).WherePasses(filter).ToElements():
+    print(i)
+    print(i.Id)
+    print(i.FamilyName)
+    print(Element.Name.GetValue(i))
+###
+
+###Inheritance Hierarchy
+https://www.revitapidocs.com/2019/a1acaed0-6a62-4c1d-94f5-4e27ce0923d3.htm
+System Object
+Autodesk.Revit.DB Element
+Autodesk.Revit.DB ElementType
+Autodesk.Revit.DB InsertableObject
+Autodesk.Revit.DB FamilySymbol
+Autodesk.Revit.DB AnnotationSymbolType
+Autodesk.Revit.DB.Architecture RoomTagType
+Autodesk.Revit.DB AreaTagType
+Autodesk.Revit.DB.Mechanical SpaceTagType
+Autodesk.Revit.DB MullionType
+Autodesk.Revit.DB PanelType
+Autodesk.Revit.DB.Structure TrussType 
+###
+
+
