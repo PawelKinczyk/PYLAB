@@ -54,3 +54,11 @@ Autodesk.Revit.DB.Structure TrussType
 ###
 
 
+###Simple imput widow from documentation
+from pyrevit import forms
+ops = ['option1', 'option2', 'option3', 'option4']
+switches = ['switch1', 'switch2']
+cfgs = {'option1': { 'background': '0xFF55FF'}}
+rops, rswitches = forms.CommandSwitchWindow.show(ops,switches=switches, message='Select Option',config=cfgs,
+recognize_access_key=False)
+###
