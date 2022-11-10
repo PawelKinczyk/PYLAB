@@ -5,6 +5,7 @@ class CustomISelectionFilter(ISelectionFilter):
         self.nom_categorie = nom_categorie
     def AllowElement(self, e):
         if e.Category.Name == self.nom_categorie:
+        if self.nom_categorie.Contains(e.Category.Name):    
             return True
         else:
             return False
