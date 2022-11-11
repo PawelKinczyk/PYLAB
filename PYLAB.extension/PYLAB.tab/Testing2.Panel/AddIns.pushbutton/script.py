@@ -2,7 +2,7 @@ import clr
 import sys
 import os
 
-from rpw import revit
+from rpw import revit,db
 from rpw.ui.forms import TextInput
 from Autodesk.Revit.UI.Selection import *
 from Autodesk.Revit.DB import *
@@ -14,20 +14,24 @@ uidoc = revit.uidoc
 # pipes_insulation_type = revit.query.get_types_by_class(DB.Plumbing.PipeInsulationType)
 # print(pipes_insulation_type)
 class CustomISelectionFilter(ISelectionFilter):
-    def __init__(self, nom_categorie):
-        self.nom_categorie = nom_categorie
-    def AllowElement(self, e):
-        if e.Category.Name == self.i:
-            return True
-        else:
-            return False
-    def AllowReference(self, ref, point):
-        return true
+	def __init__(self, nom_categorie):
+		self.nom_categorie = nom_categorie
+	def AllowElement(self, e):
+		if e.Category.Name in self.nom_categorie:
+        # if self.nom_categorie.Contains(e.Category.Name):
+		#if e.Category.Name == self.nom_categorie:
+			return True
+		else:
+			return False
+	def AllowReference(self, ref, point):
+		return true
 
+def Pargetstr(element, name):
+    return (element.GetParameters(name))[0].AsValueString()
 
 
 with forms.WarningBar(title="Pick elements in model"):
-    collector = uidoc.Selection.PickObjects(ObjectType.Element,CustomISelectionFilter(typeof("Pipe"),typeof("PipeFitting")))
+    collector = uidoc.Selection.PickObjects(ObjectType.Element,CustomISelectionFilter("Pipes Pipe Fittings"))
 
 filter1=ElementCategoryFilter(BuiltInCategory.OST_PipeInsulations)
 ins_list=FilteredElementCollector(doc).OfClass(ElementType).WherePasses(filter1).ToElements()
@@ -47,27 +51,90 @@ for i in collector:
     el=doc.GetElement(i.ElementId)
     elements.append(el)
     elements_type.append(el.Name)
-    print(el.Diameter*304.8)
-    dict.update({el.Name + str(el.Diameter*304.8):0})
+    element_parameters=[]
+    for p in el.Parameters:
+        element_parameters.append(p.Definition.Name)
+
+    print("=======")
+    print(el.Category)
+    print(el.Category.Name)
+    print(el.Parameters)
+    
+    if el.Category.Name=="Pipes":
+        # print(el.Diameter*304.8)
+        # print(Par_Get_Str(el, "Family and Type"))
+        # print((el.GetParameters("Family and Type"))[0].AsValueString())
+        dict.update({Pargetstr(el, "Family and Type") +" "
+                    + str(el.Diameter*304.8):0})
+    elif "Nominal Diameter 1" in element_parameters:
+        # a=el.GetParameters("Nominal Diameter 1")
+        # b=el.GetParameters("Nominal Diameter 2")
+        # c=el.GetParameters("Family and Type")
+        # print(a[0].AsValueString())
+        # print(b[0].AsValueString())
+        # print(c[0].AsValueString())
+        # d=a[0].AsValueString()
+        # e=b[0].AsValueString()
+        # f=c[0].AsValueString()
+        dict.update({Pargetstr(el, "Family and Type") +" "
+                + Pargetstr(el, "Nominal Diameter 1") +" "
+                + Pargetstr(el, "Nominal Diameter 2"):0})
+
+    else:
+        # a=el.GetParameters("Nominal Diameter")
+        # print(a[0].AsValueString())
+        # c=a[0].AsValueString()
+        dict.update({Pargetstr(el, "Family and Type") +" "
+                    + Pargetstr(el, "Nominal Diameter"):0})
+        # print("fit2")
+    del element_parameters[:]
+print(element_parameters)
 print(elements)
 print(elements_type)
 print(dict)
 
 for key in dict:
-    t=forms.ask_for_string(prompt='Select Pipe Insulation Thickness for {}'.format(key), title="Insulation")
+    t=forms.ask_for_string(prompt='Select Insulation Thickness for {}'.format(key), title="Insulation")
     dict.update({key:t})
-
+print(dict)
 transaction = Transaction(doc, 'Transaction')
 transaction.Start()
 
-for i in elements:
+for el in elements:
     try:
-        t=float(dict[i.Name + str(i.Diameter*304.8)])/304.8
-        print(t)
-        Plumbing.PipeInsulation.Create(doc,i.Id,choosen_ins.Id,t)
+        for p in el.Parameters:
+            element_parameters.append(p.Definition.Name)
         
+        if el.Category.Name=="Pipes":
+            t=float(dict[Pargetstr(el, "Family and Type") +" "
+                    + str(el.Diameter*304.8)])/304.8
+            Plumbing.PipeInsulation.Create(doc,el.Id,choosen_ins.Id,t)
+            print("=====")
+            print(Pargetstr(el, "Family and Type") +" "
+                    + str(el.Diameter*304.8)+ " Id: " + str(el.Id))
+            print("Insulation thicknes: {}").format(t*304.8)
+        elif "Nominal Diameter 1" in element_parameters:
+            t=float(dict[Pargetstr(el, "Family and Type") +" "
+                + Pargetstr(el, "Nominal Diameter 1") +" "
+                + Pargetstr(el, "Nominal Diameter 2")])/304.8
+            Plumbing.PipeInsulation.Create(doc,el.Id,choosen_ins.Id,t)
+            print("=====")
+            print(Pargetstr(el, "Family and Type") +" "
+                + Pargetstr(el, "Nominal Diameter 1") +" "
+                + Pargetstr(el, "Nominal Diameter 2") + " Id: " + str(el.Id))
+            print("Insulation thicknes: {}").format(t*304.8)
+        else:
+            t=float(dict[Pargetstr(el, "Family and Type") +" "
+                    + Pargetstr(el, "Nominal Diameter")])/304.8
+            Plumbing.PipeInsulation.Create(doc,el.Id,choosen_ins.Id,t)
+            print("=====")
+            print(Pargetstr(el, "Family and Type") +" "
+                + Pargetstr(el, "Nominal Diameter") + " Id: " + str(el.Id))
+            print("Insulation thicknes: {}").format(t*304.8)
+        del element_parameters[:]
     except Exception as e: 
         print(e)
+        print("Error Element Id {}".format(el.Id))
 transaction.Commit()
 # ins_list_p=[Element.Name.GetValue(i) for i in ins_list]
 # print(ins_list_p)
