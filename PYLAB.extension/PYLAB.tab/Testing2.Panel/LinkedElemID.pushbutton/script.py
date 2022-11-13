@@ -9,6 +9,9 @@ from pyrevit import forms
 doc = revit.doc
 uidoc = revit.uidoc
 
+def Pargetstr(element, name):
+    return (element.GetParameters(name))[0].AsValueString()
+
 # Pick model elements
 try:
     with forms.WarningBar(title="Pick elements in model"):
@@ -28,11 +31,19 @@ except:
 # Print Ids
 try:
     for i in collector:
+            print("====")
             print("Model element "+str(i.ElementId))
-except:
+            el=doc.GetElement(i.ElementId)
+            print((Pargetstr(el, "Family and Type")))
+except:     
     print("No linked elements")
 try:
     for i in collector_link:
+            
+            print("====")
             print("Linked element "+str(i.ElementId))
-except:
+            el=doc.GetElement(i.LinkedElementId)
+            print((Pargetstr(el, "Family and Type")))
+except Exception as e:
+    print(e)
     print("No linked elements")

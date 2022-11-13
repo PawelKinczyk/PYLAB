@@ -11,8 +11,7 @@ from pyrevit import DB, forms
 doc = revit.doc
 uidoc = revit.uidoc
 
-# pipes_insulation_type = revit.query.get_types_by_class(DB.Plumbing.PipeInsulationType)
-# print(pipes_insulation_type)
+## Class and def
 class CustomISelectionFilter(ISelectionFilter):
 	def __init__(self, nom_categorie):
 		self.nom_categorie = nom_categorie
@@ -29,8 +28,8 @@ class CustomISelectionFilter(ISelectionFilter):
 def Pargetstr(element, name):
     return (element.GetParameters(name))[0].AsValueString()
 
-
-with forms.WarningBar(title="Pick elements in model"):
+## Picking elements
+with forms.WarningBar(title="Pick elements in model[pipes/pipe fittings"):
     collector = uidoc.Selection.PickObjects(ObjectType.Element,CustomISelectionFilter("Pipes Pipe Fittings"))
 
 filter1=ElementCategoryFilter(BuiltInCategory.OST_PipeInsulations)
@@ -42,8 +41,8 @@ recognize_access_key=False)
 print(rops)
 choosen_ins=ins_list[ins_list_pins.index(rops)]
 print(choosen_ins)
-# filter2=ElementCategoryFilter(BuiltInCategory.OST_Pipe)
-# ins_list=FilteredElementCollector(doc).OfClass(ElementType).WherePasses(filter2).ToElements()
+
+## Get types of elements to ask for insulation thickness
 elements=[]
 elements_type=[]
 dict={}
@@ -61,38 +60,28 @@ for i in collector:
     print(el.Parameters)
     
     if el.Category.Name=="Pipes":
-        # print(el.Diameter*304.8)
-        # print(Par_Get_Str(el, "Family and Type"))
-        # print((el.GetParameters("Family and Type"))[0].AsValueString())
+        
         dict.update({Pargetstr(el, "Family and Type") +" "
                     + str(el.Diameter*304.8):0})
+
     elif "Nominal Diameter 1" in element_parameters:
-        # a=el.GetParameters("Nominal Diameter 1")
-        # b=el.GetParameters("Nominal Diameter 2")
-        # c=el.GetParameters("Family and Type")
-        # print(a[0].AsValueString())
-        # print(b[0].AsValueString())
-        # print(c[0].AsValueString())
-        # d=a[0].AsValueString()
-        # e=b[0].AsValueString()
-        # f=c[0].AsValueString()
+        
         dict.update({Pargetstr(el, "Family and Type") +" "
                 + Pargetstr(el, "Nominal Diameter 1") +" "
                 + Pargetstr(el, "Nominal Diameter 2"):0})
 
     else:
-        # a=el.GetParameters("Nominal Diameter")
-        # print(a[0].AsValueString())
-        # c=a[0].AsValueString()
+        
         dict.update({Pargetstr(el, "Family and Type") +" "
                     + Pargetstr(el, "Nominal Diameter"):0})
-        # print("fit2")
+        
     del element_parameters[:]
 print(element_parameters)
 print(elements)
 print(elements_type)
 print(dict)
 
+## Ask for insulation thickness
 for key in dict:
     t=forms.ask_for_string(prompt='Select Insulation Thickness for {}'.format(key), title="Insulation")
     dict.update({key:t})
@@ -100,6 +89,7 @@ print(dict)
 transaction = Transaction(doc, 'Transaction')
 transaction.Start()
 
+## Set insulation to pipes
 for el in elements:
     try:
         for p in el.Parameters:
@@ -136,29 +126,3 @@ for el in elements:
         print(e)
         print("Error Element Id {}".format(el.Id))
 transaction.Commit()
-# ins_list_p=[Element.Name.GetValue(i) for i in ins_list]
-# print(ins_list_p)
-
-# with forms.WarningBar(title="Pick elements in model"):
-#          collector = uidoc.Selection.PickObjects(ObjectType.Element)
-# ops = a
-# forms.CommandSwitchWindow.show(ops, message='Select Option')
-# value = TextInput('Title', default="3")
-
-
-# Pick model elements and add insulation
-# try:
-#     with forms.WarningBar(title="Pick elements in model"):
-#         collector = uidoc.Selection.PickObjects(ObjectType.Element)
-    
-    
-#     for i in collector:
-#         try:
-#             transaction = Transaction(doc, 'Transaction')
-#             transaction.Start()
-#             Plumbing.PipeInsulation.Create(doc,i.ElementId,ElementId(599323),1)
-#             transaction.Commit()
-#         except Exception as e: 
-#             print(e)
-# except Exception as e: 
-##     print(e)
