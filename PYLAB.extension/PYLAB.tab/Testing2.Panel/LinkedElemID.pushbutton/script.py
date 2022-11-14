@@ -17,16 +17,16 @@ try:
     with forms.WarningBar(title="Pick elements in model"):
         collector = uidoc.Selection.PickObjects(ObjectType.Element)
 
-except:
-    print("")
+except Exception as e:
+    print(e)
     
 # Pick linked elements
 try:
     with forms.WarningBar(title="Pick elements in linked model"):
         collector_link = uidoc.Selection.PickObjects(ObjectType.LinkedElement)
 
-except:
-    print("")
+except Exception as e:
+    print(e)
 
 # Print Ids
 try:
@@ -36,14 +36,15 @@ try:
             el=doc.GetElement(i.ElementId)
             print((Pargetstr(el, "Family and Type")))
 except:     
-    print("No linked elements")
+    print("No picked elements")
 try:
     for i in collector_link:
-            
             print("====")
+            el=doc.GetElement(i.ElementId)
+            linkdoc=el.GetLinkDocument()
+            el=linkdoc.GetElement(i.LinkedElementId)
             print("Linked element "+str(i.ElementId))
-            el=doc.GetElement(i.LinkedElementId)
             print((Pargetstr(el, "Family and Type")))
 except Exception as e:
     print(e)
-    print("No linked elements")
+    print("No picked linked elements")
