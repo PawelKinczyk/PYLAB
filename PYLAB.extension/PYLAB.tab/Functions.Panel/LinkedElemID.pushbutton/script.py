@@ -18,7 +18,8 @@ try:
         collector = uidoc.Selection.PickObjects(ObjectType.Element)
 
 except Exception as e:
-    print(e)
+    pass
+    # print(e)
     
 # Pick linked elements
 try:
@@ -26,7 +27,8 @@ try:
         collector_link = uidoc.Selection.PickObjects(ObjectType.LinkedElement)
 
 except Exception as e:
-    print(e)
+    pass
+    # print(e)
 
 # Print Ids
 try:

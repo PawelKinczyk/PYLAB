@@ -28,6 +28,9 @@ class CustomISelectionFilter(ISelectionFilter):
 def Pargetstr(element, name):
     return (element.GetParameters(name))[0].AsValueString()
 
+def Parget(element, name):
+    return (element.GetParameters(name))[0].AsString()
+
 ## Picking elements
 with forms.WarningBar(title="Pick elements in model[pipes/pipe fittings"):
     collector = uidoc.Selection.PickObjects(ObjectType.Element,CustomISelectionFilter("Pipes Pipe Fittings"))
@@ -38,9 +41,9 @@ ins_list_pins=[Element.Name.GetValue(i) for i in ins_list]
 
 rops = forms.CommandSwitchWindow.show(ins_list_pins, message='Select Option',
 recognize_access_key=False)
-print(rops)
+# print(rops)
 choosen_ins=ins_list[ins_list_pins.index(rops)]
-print(choosen_ins)
+# print(choosen_ins)
 
 ## Get types of elements to ask for insulation thickness
 elements=[]
@@ -54,46 +57,40 @@ for i in collector:
     for p in el.Parameters:
         element_parameters.append(p.Definition.Name)
 
-    print("=======")
-    print(el.Category)
-    print(el.Category.Name)
-    print(el.Parameters)
-    
-    if el.Category.Name=="Pipes":
-        
-        dict.update({Pargetstr(el, "Family and Type") +" "
-                    + str(el.Diameter*304.8):0})
+    # print("=======")
+    # print(el.Category)
+    # print(el.Category.Name)
+    # print(el.Parameters)
+    try:
+        if el.Category.Name=="Pipes":
+            
+            dict.update({Pargetstr(el, "Family and Type") +" "
+                        + str(el.Diameter*304.8):0})
 
-    elif "Nominal Diameter 1" in element_parameters:
-        
-        dict.update({Pargetstr(el, "Family and Type") +" "
-                + Pargetstr(el, "Nominal Diameter 1") +" "
-                + Pargetstr(el, "Nominal Diameter 2"):0})
-
-    else:
-        
-        dict.update({Pargetstr(el, "Family and Type") +" "
-                    + Pargetstr(el, "Nominal Diameter"):0})
-        
+        else:
+            
+            dict.update({Pargetstr(el, "Family and Type") +" "
+                        + Parget(el, "Overall Size"):0})
+    except Exception as e:    
+        print(e)
     del element_parameters[:]
-print(element_parameters)
-print(elements)
-print(elements_type)
-print(dict)
+# print(element_parameters)
+# print(elements)
+# print(elements_type)
+# print(dict)
 
 ## Ask for insulation thickness
 for key in dict:
     t=forms.ask_for_string(prompt='Select Insulation Thickness for {}'.format(key), title="Insulation")
     dict.update({key:t})
-print(dict)
+# print(dict)
 transaction = Transaction(doc, 'Transaction')
 transaction.Start()
 
 ## Set insulation to pipes
+print("Results:")
 for el in elements:
     try:
-        for p in el.Parameters:
-            element_parameters.append(p.Definition.Name)
         
         if el.Category.Name=="Pipes":
             t=float(dict[Pargetstr(el, "Family and Type") +" "
@@ -103,26 +100,18 @@ for el in elements:
             print(Pargetstr(el, "Family and Type") +" "
                     + str(el.Diameter*304.8)+ " Id: " + str(el.Id))
             print("Insulation thicknes: {}").format(t*304.8)
-        elif "Nominal Diameter 1" in element_parameters:
-            t=float(dict[Pargetstr(el, "Family and Type") +" "
-                + Pargetstr(el, "Nominal Diameter 1") +" "
-                + Pargetstr(el, "Nominal Diameter 2")])/304.8
-            Plumbing.PipeInsulation.Create(doc,el.Id,choosen_ins.Id,t)
-            print("=====")
-            print(Pargetstr(el, "Family and Type") +" "
-                + Pargetstr(el, "Nominal Diameter 1") +" "
-                + Pargetstr(el, "Nominal Diameter 2") + " Id: " + str(el.Id))
-            print("Insulation thicknes: {}").format(t*304.8)
+        
         else:
             t=float(dict[Pargetstr(el, "Family and Type") +" "
-                    + Pargetstr(el, "Nominal Diameter")])/304.8
+                    + Parget(el, "Overall Size")])/304.8
             Plumbing.PipeInsulation.Create(doc,el.Id,choosen_ins.Id,t)
             print("=====")
             print(Pargetstr(el, "Family and Type") +" "
-                + Pargetstr(el, "Nominal Diameter") + " Id: " + str(el.Id))
+                + Parget(el, "Overall Size") + " Id: " + str(el.Id))
             print("Insulation thicknes: {}").format(t*304.8)
-        del element_parameters[:]
+        
     except Exception as e: 
+        print("=====")
         print(e)
         print("Error Element Id {}".format(el.Id))
 transaction.Commit()
