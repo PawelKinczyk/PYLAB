@@ -1,7 +1,3 @@
-import clr
-import sys
-import os
-
 from rpw import revit,db
 from rpw.ui.forms import TextInput
 from Autodesk.Revit.UI.Selection import *
