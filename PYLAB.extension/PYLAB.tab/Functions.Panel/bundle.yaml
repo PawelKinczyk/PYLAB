@@ -3,4 +3,6 @@ layout:
   - -----
   - AddIns
   - -----
-  # - Bypass
+  - Bypass
+  - -----
+  - CopyParameter
