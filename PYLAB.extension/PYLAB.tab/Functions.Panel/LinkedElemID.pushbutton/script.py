@@ -30,7 +30,7 @@ except Exception as e:
 try:
     for i in collector:
             print("====")
-            print("Model element "+str(i.ElementId))
+            print("Model element Id "+str(i.ElementId))
             el=doc.GetElement(i.ElementId)
             print((Pargetstr(el, "Family and Type")))
 except:     
@@ -41,7 +41,7 @@ try:
             el=doc.GetElement(i.ElementId)
             linkdoc=el.GetLinkDocument()
             el=linkdoc.GetElement(i.LinkedElementId)
-            print("Linked element "+str(i.ElementId))
+            print("Linked element Id "+str(i.LinkedElementId))
             print((Pargetstr(el, "Family and Type")))
 except Exception as e:
     # print(e)
