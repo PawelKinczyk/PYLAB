@@ -2,7 +2,7 @@ from rpw import revit,db
 from rpw.ui.forms import TextInput
 from Autodesk.Revit.UI.Selection import *
 from Autodesk.Revit.DB import *
-from pyrevit import DB, forms
+from pyrevit import forms
 
 doc = revit.doc
 uidoc = revit.uidoc
