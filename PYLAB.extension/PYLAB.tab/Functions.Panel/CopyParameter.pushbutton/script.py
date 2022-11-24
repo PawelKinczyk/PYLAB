@@ -5,6 +5,7 @@ import pyrevit
 import rpw
 
 from rpw import revit
+from rpw import db
 from pyrevit import forms
 from Autodesk.Revit.UI.Selection import *
 from Autodesk.Revit.DB import *
@@ -24,27 +25,41 @@ try:
 
 except Exception as e:
     print("Nothing was picked")
+
+
 collector=collector.ElementId
 collector=doc.GetElement(collector)
 collector_cat_id=collector.Category.Id
+picked_el=collector
 print(collector)
 print(collector_cat_id)
 type=collector.GetType()
 print(type)
 print("===")
-# filter=
-Shoes = [x for x in FilteredElementCollector(doc).OfClass(type).ToElements() if "Standard" in x.LookupParameter(Type).AsValueString]
-# collector=FilteredElementCollector(doc).OfClass(type).WherePasses(filter).ToElements()
-print(Shoes)
+collector=FilteredElementCollector(doc).OfClass(type).ToElements()
+print(collector)
+print("===")
+## Get the elements of the same Family and Type
+elements=[]
 for i in collector:
-    print(i.Name)
-# collector_cat=collector.Category.GetType()
-# print(collector_cat)
-
-# all_elem=GetValidTypes(doc,collector.ElementId)
-# all_elements_collector = FilteredElementCollector(doc).OfCategory(collector_cat).OfClass(FamilySymbol).WhereElementIsElementType().ToElements()
+    if Pargetstr(i, "Family and Type")==Pargetstr(picked_el, "Family and Type"):
+        elements.append(i)
+    else:
+        pass
+    
+print(elements)
 
 ## Choose parameter to get value
 
+
+parameters_list=[picked_el.Parameters]
+parameters_list_pins=[Element.Name.GetValue(i) for i in ins_list]
+selected_option = forms.CommandSwitchWindow.show(
+    [parameters_list],
+     message='Select Option:',
+)
+
+if selected_option == 'Option 2':
+    do_stuff()
 
 ## Choose parameter to overwrite value
