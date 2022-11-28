@@ -48,18 +48,37 @@ for i in collector:
         pass
     
 print(elements)
+## Get parameters
+parameters={}
+parameters_editable={}
+for i in elements[0].Parameters:
+    parameters.update({i.Definition.Name:i})
+    if  i.IsReadOnly == False and i.StorageType == StorageType.String:
+        parameters_editable.update({i.Definition.Name:i})
+print(parameters)
 
-## Choose parameter to get value
 
+## Take parameter to be copied
 
-parameters_list=[picked_el.Parameters]
-parameters_list_pins=[Element.Name.GetValue(i) for i in ins_list]
+print("=============")
+print(parameters.keys())
+parameters_list=parameters.keys()
+
 selected_option = forms.CommandSwitchWindow.show(
-    [parameters_list],
-     message='Select Option:',
+    parameters_list,
+     message='Take parameter to be copied:',recognize_access_key=False
 )
 
-if selected_option == 'Option 2':
-    do_stuff()
+## Take parameter to set
+
+print("=============")
+print(parameters.keys())
+parameters_list_editable=parameters_editable.keys()
+
+selected_option = forms.CommandSwitchWindow.show(
+    parameters_list_editable,
+     message='Take parameter to set:',recognize_access_key=False
+)
+
 
 ## Choose parameter to overwrite value
