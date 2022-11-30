@@ -1,5 +1,7 @@
 ## Imports
-import Autodesk
+import os
+import sys
+
 import clr
 import pyrevit
 import rpw
@@ -25,7 +27,6 @@ try:
 
 except Exception as e:
     print("Nothing was picked")
-
 
 collector=collector.ElementId
 collector=doc.GetElement(collector)
@@ -53,10 +54,9 @@ parameters={}
 parameters_editable={}
 for i in elements[0].Parameters:
     parameters.update({i.Definition.Name:i})
-    if  i.IsReadOnly == False and i.StorageType == StorageType.String:
-        parameters_editable.update({i.Definition.Name:i})
+    # if  i.IsReadOnly == False and i.StorageType == StorageType.String:
+    #     parameters_editable.update({i.Definition.Name:i})
 print(parameters)
-
 
 ## Take parameter to be copied
 
@@ -64,21 +64,52 @@ print("=============")
 print(parameters.keys())
 parameters_list=parameters.keys()
 
-selected_option = forms.CommandSwitchWindow.show(
+selected_option_a = forms.CommandSwitchWindow.show(
     parameters_list,
      message='Take parameter to be copied:',recognize_access_key=False
 )
+print(selected_option_a)
 
-## Take parameter to set
+## 
+for i in elements[0].Parameters:
+    if  i.IsReadOnly == False and i.StorageType == StorageType.String and i.Definition.Name != selected_option_a:
+        parameters_editable.update({i.Definition.Name:i})
+    elif i.IsReadOnly == False and parameters[selected_option_a].StorageType == i.StorageType and i.Definition.Name != selected_option_a and i.CanBeAssociatedWithGlobalParameters() ==True:
+        parameters_editable.update({i.Definition.Name:i})
+    else:
+        pass
+
+## Choose parameter to overwrite value
 
 print("=============")
-print(parameters.keys())
+print(parameters_editable.keys())
 parameters_list_editable=parameters_editable.keys()
 
-selected_option = forms.CommandSwitchWindow.show(
+selected_option_b = forms.CommandSwitchWindow.show(
     parameters_list_editable,
      message='Take parameter to set:',recognize_access_key=False
 )
-
+print(selected_option_b)
 
 ## Choose parameter to overwrite value
+# try:
+t = Transaction(doc, "Override parameter - PYLAB")
+t.Start()
+try:
+    for i in elements:
+        
+        parameter_a = i.LookupParameter(selected_option_a)
+        parameter_b = i.LookupParameter(selected_option_b)
+        if parameter_a.StorageType == StorageType.String:
+            parameter_b_overr=parameter_a.AsString
+            print(parameter_b_overr)
+            parameter_b.Set(str(parameter_b_overr))
+        else:
+            parameter_b_overr=parameter_a.AsValueString
+            print(parameter_b_overr)
+            parameter_b.Set(str(parameter_b_overr))
+except Exception as e:
+    print(e)
+t.Commit()
+# except Exception as e:
+#     print(e)
