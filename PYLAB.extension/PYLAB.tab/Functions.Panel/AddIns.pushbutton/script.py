@@ -80,11 +80,12 @@ for key in dict:
     t=forms.ask_for_string(prompt='Select Insulation Thickness for {}'.format(key), title="Insulation")
     dict.update({key:t})
 # print(dict)
-transaction = Transaction(doc, 'Transaction')
+transaction = Transaction(doc, 'Add insulation - PYLAB')
 transaction.Start()
 
 ## Set insulation to pipes
-print("Results:")
+output = output.get_output()
+output.print_html('<font size="6"><strong>Results:</strong></font>')
 for el in elements:
     try:
         

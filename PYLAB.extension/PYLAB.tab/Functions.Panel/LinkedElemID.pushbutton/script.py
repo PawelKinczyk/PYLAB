@@ -27,6 +27,8 @@ except Exception as e:
     # print(e)
 
 ## Print Ids
+output = output.get_output()
+output.print_html('<font size="6"><strong>Results:</strong></font>')
 try:
     for i in collector:
             print("====")
