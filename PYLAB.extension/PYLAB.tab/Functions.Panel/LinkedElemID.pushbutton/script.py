@@ -1,6 +1,7 @@
 from rpw import revit
 from Autodesk.Revit.UI.Selection import *
 from pyrevit import forms
+from pyrevit import output
 
 doc = revit.doc
 uidoc = revit.uidoc

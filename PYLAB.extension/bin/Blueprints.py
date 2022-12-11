@@ -122,3 +122,12 @@ cfgs = {'option1': { 'background': '0xFF55FF'}}
 rops, rswitches = forms.CommandSwitchWindow.show(ops,switches=switches, message='Select Option',config=cfgs,
 recognize_access_key=False)
 ###
+
+###Handle exception
+except Exception as e:
+        print(e.__class__.__name__)
+        print("Element Id: " + str(i.Id))
+        print("Error message: " + str(e))
+        print("="*6)
+
+        e.__name__

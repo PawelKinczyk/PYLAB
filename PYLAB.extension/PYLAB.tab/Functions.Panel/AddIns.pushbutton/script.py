@@ -3,6 +3,7 @@ from rpw.ui.forms import TextInput
 from Autodesk.Revit.UI.Selection import *
 from Autodesk.Revit.DB import *
 from pyrevit import forms
+from pyrevit import output
 
 doc = revit.doc
 uidoc = revit.uidoc

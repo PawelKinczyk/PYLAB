@@ -3,8 +3,8 @@ layout:
   - -----
   - AddIns
   - -----
-  - Bypass
-  - -----
   - CopyParameter
   - -----
   - ActiveWorkset
+  - -----
+  - CopyFilters

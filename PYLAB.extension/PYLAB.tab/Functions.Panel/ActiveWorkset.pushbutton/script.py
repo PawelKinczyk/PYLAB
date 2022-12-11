@@ -14,7 +14,7 @@ try:
         collector = uidoc.Selection.PickObject(ObjectType.Element)
 
 except Exception as e:
-    pass
+    print("Error: " + str(e))
 
 ## Get element's workset
 el=doc.GetElement(collector.ElementId)
@@ -22,9 +22,12 @@ workset_id = el.WorksetId
 transaction = Transaction(doc, 'Changed workset - PYLAB')
 
 ## Change active workset
-transaction.Start()
-doc.GetWorksetTable().SetActiveWorksetId(workset_id)
-transaction.Commit()
+try:
+    transaction.Start()
+    doc.GetWorksetTable().SetActiveWorksetId(workset_id)
+    transaction.Commit()
 
-output = output.get_output()
-output.close()
+    output = output.get_output()
+    output.close()
+except Exception as e:
+    print("Error: " + str(e))
