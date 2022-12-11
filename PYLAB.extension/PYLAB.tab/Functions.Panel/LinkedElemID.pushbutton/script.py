@@ -1,6 +1,7 @@
 from rpw import revit
 from Autodesk.Revit.UI.Selection import *
 from pyrevit import forms
+from pyrevit import output
 
 doc = revit.doc
 uidoc = revit.uidoc
@@ -27,6 +28,8 @@ except Exception as e:
     # print(e)
 
 ## Print Ids
+output = output.get_output()
+output.print_html('<font size="6"><strong>Results:</strong></font>')
 try:
     for i in collector:
             print("====")
