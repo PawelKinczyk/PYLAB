@@ -9,31 +9,31 @@ This is my project to improve Revit functions by adding my own by using PyRevit.
 
 
 ## Functions
-Elements Ids -> Get ids of model and linked model elements. Tested on Revit 2021 and 2022
+# Elements Ids -> Get ids of model and linked model elements. Tested on Revit 2021 and 2022
 
 
 https://user-images.githubusercontent.com/96824698/202792850-b25940a6-3120-4bf9-8083-3885451b27c4.mp4
 
 
-Add Insulation -> Adding insulation for pipes. Tested on Revit 2021 and 2022
+# Add Insulation -> Adding insulation for pipes. Tested on Revit 2021 and 2022
 
 
 https://user-images.githubusercontent.com/96824698/202792870-b3cf4196-d683-4491-bb09-39cd74f34620.mp4
 
 
-Copy Parameter -> Copy parameter value to other parameter in the same parameter
+# Copy Parameter -> Copy parameter value to other parameter in the same parameter
 
 
 https://user-images.githubusercontent.com/96824698/207152968-2e0f4d95-5eab-44b8-aedf-41033a2d3dd1.mp4
 
 
-Active Workset -> Set workset of picked element. Tested on Revit 2021 and 2022
+# Active Workset -> Set workset of picked element. Tested on Revit 2021 and 2022
 
 
 https://user-images.githubusercontent.com/96824698/207152931-cd19c042-c294-4fe2-bc1a-8c0e58a2a0fc.mp4
 
 
-Copy Filters -> Copy filters with overrides from active view to other view template. Tested on Revit 2021 and 2022
+# Copy Filters -> Copy filters with overrides from active view to other view template. Tested on Revit 2021 and 2022
 
 
 https://user-images.githubusercontent.com/96824698/207152984-fc7719e6-fe88-4bcb-b4b4-0856db2c2c20.mp4
