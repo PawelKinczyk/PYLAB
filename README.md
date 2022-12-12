@@ -41,6 +41,6 @@ https://user-images.githubusercontent.com/96824698/207152984-fc7719e6-fe88-4bcb-
 
 ## Thanks
 
-@eirannejad for pyRevit!
-@jmcouffin , @ErikFrits , @CyrilWaechter for help and materials!
+[eirannejad]([https://pages.github.com/](https://github.com/eirannejad)) for pyRevit!
+[jmcouffin]([https://pages.github.com/](https://github.com/jmcouffin)) , [ErikFrits]([https://pages.github.com/](https://github.com/ErikFrits)) , [CyrilWaechter]([https://pages.github.com/](https://github.com/CyrilWaechter)) for help and materials!
 Thanks to https://icons8.com/icons for beautifull icons!
