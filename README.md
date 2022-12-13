@@ -1,7 +1,7 @@
 
 # PYLAB
 
-This is my project to improve Revit functions by adding my own by using PyRevit. I'am new in programming so if you see something to improve pleas write to me! If you want to use my addins go ahead and download the PYLAB repository. I will be glad!
+This is my project to improve Revit functions by adding my own by using PyRevit. I'am new in programming so if you see something to improve please write to me! If you want to use my addins go ahead and download the PYLAB repository. I will be glad!
 
 ## Authors
 
