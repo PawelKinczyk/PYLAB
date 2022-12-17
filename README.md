@@ -21,7 +21,7 @@ https://user-images.githubusercontent.com/96824698/202792850-b25940a6-3120-4bf9-
 https://user-images.githubusercontent.com/96824698/202792870-b3cf4196-d683-4491-bb09-39cd74f34620.mp4
 
 
-### Copy Parameter -> Copy parameter value to other parameter in the same parameter
+### Copy Parameter -> Copy parameter value to other parameter in the same element
 
 
 https://user-images.githubusercontent.com/96824698/207152968-2e0f4d95-5eab-44b8-aedf-41033a2d3dd1.mp4
