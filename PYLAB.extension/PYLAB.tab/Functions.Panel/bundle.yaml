@@ -10,3 +10,5 @@ layout:
   - CopyFilters
   - -----
   - BatchNWC
+  - BatchDetachedModel
+  - SpaceSearch
