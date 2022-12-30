@@ -38,17 +38,22 @@ save_as_options.OverwriteExistingFile = True
 
 
 try:
+	models_folder_detached = models_folder_detached.replace("\\","\\\\")
 	for revit_model in models_paths:
+		
 		try:
+			
 			print(revit_model)
 			revit_model_path = ModelPathUtils.ConvertUserVisiblePathToModelPath(revit_model)
-			
 			doc_det = __revit__.Application.OpenDocumentFile(revit_model_path, open_options)	
-			
-			doc_det.SaveAs(models_folder_detached, save_as_options)
+			models_folder_detached_name = models_folder_detached+"\\"+str(doc_det.Title)+".rvt"
+			print(models_folder_detached_name)
+			doc_det.SaveAs(models_folder_detached_name, save_as_options)
 			doc_det.Close(False)
+		
 		except Exception as e:
 			print(e)
+		
 except Exception as e:
 	print(e)
 
