@@ -39,6 +39,7 @@ https://user-images.githubusercontent.com/96824698/207152931-cd19c042-c294-4fe2-
 https://user-images.githubusercontent.com/96824698/207152984-fc7719e6-fe88-4bcb-b4b4-0856db2c2c20.mp4
 
 
+More instructions about function you can find on my blog: https://produktywnyprojektant.com
 ## Thanks
 
 eirannejad https://github.com/eirannejad for pyRevit! <br />
