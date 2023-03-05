@@ -10,3 +10,5 @@ layout:
   - CopyFilters
   - -----
   - SpaceSearch
+  - -----
+  - BatchChangeType
