@@ -4,3 +4,5 @@ layout:
   - BatchDetachedModel
   - -----
   - Air_terminal_calc
+  - -----
+  - Air_terminal_calc_setting

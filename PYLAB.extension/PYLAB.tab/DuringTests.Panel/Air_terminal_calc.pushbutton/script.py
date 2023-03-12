@@ -32,7 +32,6 @@ def pick_objects(title="Pick", filter=""):
 
 
 def open_json(name_of_file="", open_method="r"):
-    os.chdir(os.path.dirname(os.path.abspath(__file__)))
     with open(name_of_file, open_method) as file:
         data = json.load(file)
         return data
@@ -49,7 +48,7 @@ except:
 # Write air flow
 try:
     air_flow = forms.ask_for_string(
-        prompt="Write air supply", title="Insulation")
+        prompt="Write air supply", title="Air terminal air flow")
     air_flow = round(float(air_flow), -1)
     air_flow = int(air_flow)
 except:
@@ -57,6 +56,7 @@ except:
                 msg="You didn't write anything", exitscript=True)
 
 # Get air terminal sizes
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
 try:
     dqj_list = open_json("air_terminals_supply_settings.json", "r")
 except:
