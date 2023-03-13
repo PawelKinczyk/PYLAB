@@ -77,13 +77,15 @@ class Delete_setting_from_json():
     def get_list_of_records(self):
         self.data = json_load(self.path)
         self.selected_terminal = forms.SelectFromList.show(self.data, title=self.title, multiselect=True, button_name='Select air terminal', width=800, height=400)
+        print(self.selected_terminal)
     def delete_record_from_json(self):
-        for number, element in enumerate(self.data):
-            for element_to_delete in self.selected_terminal:
-                if element_to_delete == element:
-                    self.data = self.data.pop(number)
-                    print("{}---{}".format(element_to_delete, element))
-        print(self.data)
+        data_new = []
+        for number, element in enumerate(self.data, start=-1):
+            if element not in self.selected_terminal:
+                data_new.append(element)
+                print("{}---iter{}".format(self.data, number))
+        with open(self.path,'w') as file:
+            file.write(json.dumps(data_new, indent=1))
 
 
 
