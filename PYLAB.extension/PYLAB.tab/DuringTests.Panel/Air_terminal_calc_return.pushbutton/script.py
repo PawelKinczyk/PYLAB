@@ -40,7 +40,7 @@ def open_json(name_of_file="", open_method="r"):
 # Pick air terminal
 try:
     air_terminal = pick_objects(
-        title="Pick supply air terminal", filter="Air Terminals")
+        title="Pick return air terminal", filter="Air Terminals")
 except:
     forms.alert(title="Program Error",
                 msg="You didn't pick any air terminal", exitscript=True)
@@ -48,8 +48,7 @@ except:
 # Write air flow
 try:
     air_flow = forms.ask_for_string(
-        prompt="Write air supply", title="Air terminal air flow")
-    air_flow = round(float(air_flow), -1)
+        prompt="Write air return", title="Air terminal air flow")
     air_flow = int(air_flow)
 except:
     forms.alert(title="Program Error",
@@ -73,6 +72,7 @@ for dqj in dqj_list:
         new_dqj = tuple([air_flow_avaible])+tuple(dqj[1])
         correct_dqj.append(new_dqj)
 
+# Select ait terminal type
 try:
     selected_dqj = forms.SelectFromList.show(
         correct_dqj, title="Select air terminal which you want to pick", multiselect=False, button_name='Select DQJ', width=800)

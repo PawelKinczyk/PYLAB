@@ -1,6 +1,6 @@
 from Autodesk.Revit.UI.Selection import *
 from Autodesk.Revit.DB import *
-from pyrevit import forms, script
+from pyrevit import forms
 from rpw import revit
 import json
 import os
@@ -42,9 +42,7 @@ class Ask_for_inputs():
         for air in air_flow:
             if len(air) < 4 and air.isnumeric() == True and air_flow_min < air_flow_max:
                 air = "0"*(4-len(air))+air
-                print(air)
             elif len(air) == 4 and air.isnumeric() == True and air_flow_min < air_flow_max:
-                print(air)
                 continue
             else:
                 forms.alert(title="Program Error",
@@ -52,7 +50,6 @@ class Ask_for_inputs():
             air_flow[position] = air
             position += 1
         self.air_flow = air_flow
-        print(air_flow)
 
     def ask_for_other_parameters(self, params_list=[]):
         position = 0
@@ -61,7 +58,6 @@ class Ask_for_inputs():
             parameter_list[position] = answer
             position += 1
         self.other_parameters = parameter_list
-        print(parameter_list)
 
     def join_all_inputs(self):
         self.air_flow_minmax = "-".join(self.air_flow)
@@ -78,18 +74,16 @@ class Delete_setting_from_json():
         self.data = json_load(self.path)
         self.selected_terminal = forms.SelectFromList.show(
             self.data, title=self.title, multiselect=True, button_name='Select air terminal', width=800, height=400)
-        print(self.selected_terminal)
 
     def delete_record_from_json(self):
         data_new = []
         for number, element in enumerate(self.data, start=-1):
             if element not in self.selected_terminal:
                 data_new.append(element)
-                print("{}---iter{}".format(self.data, number))
         with open(self.path, 'w') as file:
             file.write(json.dumps(data_new, indent=1))
 
-
+# Select what user want to do
 selected_function, selected_system = forms.CommandSwitchWindow.show(
     ['Add air terminal', 'Delete air terminal'],
     switches=["Supply(left)/Return(right)"],
@@ -97,10 +91,12 @@ selected_function, selected_system = forms.CommandSwitchWindow.show(
     recognize_access_key=True
 )
 
+# Exception if nothing was pick
 if selected_function == None or selected_system == None:
     forms.alert(title="Program Error",
                 msg="You didn't pick any option", exitscript=True)
 
+# Set path to json with settings
 path_to_json = os.path.dirname(os.path.abspath(os.path.join(__file__, "../")))
 if selected_system == True:
     path_to_json = os.path.join(
@@ -109,7 +105,9 @@ else:
     path_to_json = os.path.join(
         path_to_json, "Air_terminal_calc_return.pushbutton/air_terminals_return_settings.json")
 
+# Main program
 if selected_function == "Add air terminal":
+    # Create add terminal class
     add_air_terminal = Ask_for_inputs("Air terminal setting")
     try:
         add_air_terminal.ask_for_air_flow()
@@ -121,6 +119,7 @@ if selected_function == "Add air terminal":
                       "Device volume in decibels", "Description", "Comment"]
     add_air_terminal.ask_for_other_parameters(parameter_list)
 
+    # Save new setting
     try:
         data_update = add_air_terminal.join_all_inputs()
         json_update(path_to_json, data_update)
@@ -128,8 +127,9 @@ if selected_function == "Add air terminal":
         forms.alert(title="Program Error",
                     msg="Problem with saving new settings", exitscript=True)
 
-# Print list with air terminal to delete
+# List with air terminal to delete
 elif selected_function == "Delete air terminal":
+    # Create delete settings class
     new_setting = Delete_setting_from_json(
         "Air terminal setting", path_to_json)
 

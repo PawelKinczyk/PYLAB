@@ -49,7 +49,6 @@ except:
 try:
     air_flow = forms.ask_for_string(
         prompt="Write air supply", title="Air terminal air flow")
-    air_flow = round(float(air_flow), -1)
     air_flow = int(air_flow)
 except:
     forms.alert(title="Program Error",
