@@ -2,6 +2,7 @@ import os
 
 from Autodesk.Revit.UI.Selection import *
 from Autodesk.Revit.DB import *
+from Autodesk.Revit.Creation import *
 from pyrevit import forms
 from pyrevit import output
 from pyrevit import revit
@@ -49,7 +50,7 @@ for pipe in pipes:
     pipe = doc.GetElement(pipe)
     conns = pipe.ConnectorManager.Connectors
     for conn in conns:
-        if conn.IsConnected:
+        if conn.IsConnected:  # get only connected
             continue
         connectors[conn] = None
         connlist.append(conn)
@@ -77,13 +78,17 @@ for k in connectors.keys():
 transaction = Transaction(doc, 'Air terminal calculator - PYLAB')
 transaction.Start()
 
-for k,v in connectors.items():
-			
-	try:
-		fitting = doc.Create.NewElbowFitting(k,v)
-		fittings.append(fitting.ToDSType(False))
-	except:
-		pass
-	
-        
+for k, v in connectors.items():
+    print(k.CoordinateSystem)
+    print(k.Origin)
+    try:
+        fitting = doc.Create.NewElbowFitting(k, v)
+        fittings.append(fitting.ToDSType(False))
+    except:
+        pass
+p1 = XYZ(-8.847503179, -1.335469686, 9.022309711)
+p2 = XYZ(-12.010972410, -1.335469686, 9.022309711)
+Plumbing.Pipe.Create(doc, ElementId(592532), ElementId(142438), ElementId(311), p1, p2)
+
+
 transaction.Commit()
