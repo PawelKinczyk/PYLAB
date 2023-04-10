@@ -30,11 +30,15 @@ class CustomISelectionFilter(ISelectionFilter):
         return True
 
 # Pick object/objects with custom filter
+
+
 def pick_objects(title="Pick", filter=""):
     with forms.WarningBar(title=title):
         return uidoc.Selection.PickObjects(ObjectType.Element, CustomISelectionFilter(filter))
 
 # Mesure distance between two points
+
+
 def distance(xyz1, xyz2):
     d = 0.0
     d = math.sqrt((xyz2[0] - xyz1[0])**2 + (xyz2[1] -
@@ -42,6 +46,8 @@ def distance(xyz1, xyz2):
     return d
 
 # Pick right category and amount of pipes also write error when something is wrong
+
+
 class PickElements:
     def __init__(self, title="", filter="", error_message="", max_pipes_number=100):
         self.title = title
@@ -61,6 +67,8 @@ class PickElements:
                         msg=self.error_message, exitscript=True)
 
 # Loop over the pipes and collect all connectors
+
+
 class GetPipeConnectors(object):
     def __init__(self, pipes_list):
         self.pipes_list = pipes_list
@@ -81,6 +89,8 @@ class GetPipeConnectors(object):
         return self.connlist, self.connectors
 
 # Main function class that create new pipe and connect them together
+
+
 class CreateParallelPipeAndConnect(GetPipeConnectors):
     def __init__(self, pipes_list, closest_distance=1000000):
         # Parent class is GetPipeConnectors
@@ -144,18 +154,20 @@ class CreateParallelPipeAndConnect(GetPipeConnectors):
             transaction = Transaction(doc, 'Create parallel pipe')
             transaction.Start()
             try:
-                self.new_pipe = Plumbing.Pipe.Create(doc, ElementId(592532), ElementId(
-                    142438), ElementId(311), self.p1_point, self.p2_point)
+                parent_pipe = doc.GetElement(self.pipes_list[0])
+
+                self.new_pipe = Plumbing.Pipe.Create(doc, parent_pipe.MEPSystem.GetTypeId(
+                ), parent_pipe.GetTypeId(), parent_pipe.ReferenceLevel.Id, self.p1_point, self.p2_point)
                 transaction.Commit()
             except ArgumentException:
                 transaction.Commit()
                 forms.alert(title="Program Error",
-                        msg="Please try to move pipes closer", exitscript=True)
-                
+                            msg="Please try to move pipes closer", exitscript=True)
+
             except Exception as e:
                 transaction.Commit()
                 print(e)
-            
+
         for conn in self.new_pipe.ConnectorManager.Connectors:
             self.closest_connectors[conn] = None
     # *** ***
@@ -215,4 +227,3 @@ closest_connectors = get_pipe_connectors.search_for_closest_connectors()
 get_pipe_connectors.create_parallel_pipe()
 
 get_pipe_connectors.connect_pipes()
-
