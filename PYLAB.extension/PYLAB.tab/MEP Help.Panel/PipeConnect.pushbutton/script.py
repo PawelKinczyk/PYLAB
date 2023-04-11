@@ -117,7 +117,7 @@ class CreateParallelPipeAndConnect(GetPipeConnectors):
         return self.closest_connectors
     # *** ***
 
-    # *** MANY THANKS TO Nicholas Miles and Jean-Marc https://github.com/jmcouffin ***
+    # *** CODE FROM PYREVIT FORUM MANY THANKS TO Nicholas Miles https://github.com/Negazero and Jean-Marc https://github.com/jmcouffin ***
     # Create pipe parallel to two picked pipes
     def create_parallel_pipe(self):
         # Get middle point
