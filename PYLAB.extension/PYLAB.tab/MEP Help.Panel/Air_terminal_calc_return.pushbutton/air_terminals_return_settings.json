@@ -1,272 +1,29 @@
 [
  [
-  "0001-0492", 
+  "0001-0250", 
   [
-   "DQJ-Q-SR-A-310", 
+   "DQJ-Ret", 
    "35dB", 
    "air return - Rotational", 
-   "Nawiewnik wirowy prostokatny z izolowana skrzynka rozprezna, bez przepustnicy, z kroccem okrag\u0142ym DQJA-SR-310 \u0444160."
+   "..."
   ]
  ], 
  [
-  "0493-0556", 
+  "0120-0250", 
   [
-   "DQJ-Q-SR-A-400", 
-   "35dB", 
-   "air return - Rotational", 
-   "Nawiewnik wirowy prostokatny z izolowana skrzynka rozprezna, bez przepustnicy, z kroccem okrag\u0142ym DQJA-SR-400 \u0444160."
+   "6690-06_24x12", 
+   "30", 
+   "air terminal ret", 
+   "kruger"
   ]
  ], 
  [
-  "0557-0858", 
+  "0200-0400", 
   [
-   "DQJ-Q-SR-A-500", 
-   "35dB", 
-   "air return - Rotational", 
-   "Nawiewnik wirowy prostokatny z izolowana skrzynka rozprezna, bez przepustnicy, z kroccem okrag\u0142ym DQJA-SR-500 \u0444200."
+   "6690-06_24x12", 
+   "35", 
+   "air termin return", 
+   "kruger"
   ]
- ], 
- [
-  "0859-1431", 
-  [
-   "DQJ-Q-SR-A-600", 
-   "35dB", 
-   "air return - Rotational", 
-   "Nawiewnik wirowy prostokatny z izolowana skrzynka rozprezna, bez przepustnicy, z kroccem okrag\u0142ym DQJA-SR-600 \u0444250."
-  ]
- ], 
- [
-  "1432-1752", 
-  [
-   "DQJ-Q-SR-A-800", 
-   "35dB", 
-   "air return - Rotational", 
-   "Nawiewnik wirowy prostokatny z izolowana skrzynka rozprezna, bez przepustnicy, z kroccem okrag\u0142ym DQJA-SR-800 \u0444350."
-  ]
- ], 
- [
-  "0001-0410", 
-  [
-   "DQJ-Q-SR-A-310", 
-   "30dB", 
-   "air return - Rotational", 
-   "Nawiewnik wirowy prostokatny z izolowana skrzynka rozprezna, bez przepustnicy, z kroccem okrag\u0142ym DQJA-SR-310 \u0444160."
-  ]
- ], 
- [
-  "0411-0457", 
-  [
-   "DQJ-Q-SR-A-400", 
-   "30dB", 
-   "air return - Rotational", 
-   "Nawiewnik wirowy prostokatny z izolowana skrzynka rozprezna, bez przepustnicy, z kroccem okrag\u0142ym DQJA-SR-400 \u0444160."
-  ]
- ], 
- [
-  "0458-0707", 
-  [
-   "DQJ-Q-SR-A-500", 
-   "30dB", 
-   "air return - Rotational", 
-   "Nawiewnik wirowy prostokatny z izolowana skrzynka rozprezna, bez przepustnicy, z kroccem okrag\u0142ym DQJA-SR-500 \u0444200."
-  ]
- ], 
- [
-  "0708-1216", 
-  [
-   "DQJ-Q-SR-A-600", 
-   "30dB", 
-   "air return - Rotational", 
-   "Nawiewnik wirowy prostokatny z izolowana skrzynka rozprezna, bez przepustnicy, z kroccem okrag\u0142ym DQJA-SR-600 \u0444250."
-  ]
- ], 
- [
-  "1217-1521", 
-  [
-   "DQJ-Q-SR-A-800", 
-   "30dB", 
-   "air return - Rotational", 
-   "Nawiewnik wirowy prostokatny z izolowana skrzynka rozprezna, bez przepustnicy, z kroccem okrag\u0142ym DQJA-SR-800 \u0444350."
-  ]
- ], 
- [
-  "0001-0343", 
-  [
-   "DQJ-Q-SR-A-310", 
-   "25dB", 
-   "air return - Rotational", 
-   "Nawiewnik wirowy prostokatny z izolowana skrzynka rozprezna, bez przepustnicy, z kroccem okrag\u0142ym DQJA-SR-310 \u0444160."
-  ]
- ], 
- [
-  "0344-0375", 
-  [
-   "DQJ-Q-SR-A-400", 
-   "25dB", 
-   "air return - Rotational", 
-   "Nawiewnik wirowy prostokatny z izolowana skrzynka rozprezna, bez przepustnicy, z kroccem okrag\u0142ym DQJA-SR-400 \u0444160."
-  ]
- ], 
- [
-  "0376-0583", 
-  [
-   "DQJ-Q-SR-A-500", 
-   "25dB", 
-   "air return - Rotational", 
-   "Nawiewnik wirowy prostokatny z izolowana skrzynka rozprezna, bez przepustnicy, z kroccem okrag\u0142ym DQJA-SR-500 \u0444200."
-  ]
- ], 
- [
-  "0584-01034", 
-  [
-   "DQJ-Q-SR-A-600", 
-   "25dB", 
-   "air return - Rotational", 
-   "Nawiewnik wirowy prostokatny z izolowana skrzynka rozprezna, bez przepustnicy, z kroccem okrag\u0142ym DQJA-SR-600 \u0444250."
-  ]
- ], 
- [
-  "1035-1319", 
-  [
-   "DQJ-Q-SR-A-800", 
-   "25dB", 
-   "air return - Rotational", 
-   "Nawiewnik wirowy prostokatny z izolowana skrzynka rozprezna, bez przepustnicy, z kroccem okrag\u0142ym DQJA-SR-800 \u0444350."
-  ]
- ], 
- [
-  "0001-0463", 
-  [
-   "DQJ-Q-SQ-A-310", 
-   "35dB", 
-   "air return - Rotational", 
-   "Nawiewnik wirowy prostokatny z izolowana skrzynka rozprezna, bez przepustnicy, z kroccem okrag\u0142ym DQJA-SR-310 \u0444160."
-  ]
- ], 
- [
-  "0464-0520", 
-  [
-   "DQJ-Q-SQ-A-400", 
-   "35dB", 
-   "air return - Rotational", 
-   "Nawiewnik wirowy prostokatny z izolowana skrzynka rozprezna, bez przepustnicy, z kroccem okrag\u0142ym DQJA-SR-400 \u0444160."
-  ]
- ], 
- [
-  "0521-0557", 
-  [
-   "DQJ-Q-SQ-A-500", 
-   "35dB", 
-   "air return - Rotational", 
-   "Nawiewnik wirowy prostokatny z izolowana skrzynka rozprezna, bez przepustnicy, z kroccem okrag\u0142ym DQJA-SR-500 \u0444200."
-  ]
- ], 
- [
-  "0558-1535", 
-  [
-   "DQJ-Q-SQ-A-600", 
-   "35dB", 
-   "air return - Rotational", 
-   "Nawiewnik wirowy prostokatny z izolowana skrzynka rozprezna, bez przepustnicy, z kroccem okrag\u0142ym DQJA-SR-600 \u0444250."
-  ]
- ], 
- [
-  "1536-1938", 
-  [
-   "DQJ-Q-SQ-A-800", 
-   "35dB", 
-   "air return - Rotational", 
-   "Nawiewnik wirowy prostokatny z izolowana skrzynka rozprezna, bez przepustnicy, z kroccem okrag\u0142ym DQJA-SR-800 \u0444350."
-  ]
- ], 
- [
-  "0001-0428", 
-  [
-   "DQJ-Q-SQ-A-310", 
-   "30dB", 
-   "air return - Rotational", 
-   "Nawiewnik wirowy prostokatny z izolowana skrzynka rozprezna, bez przepustnicy, z kroccem okrag\u0142ym DQJA-SR-310 \u0444160."
-  ]
- ], 
- [
-  "0429-0452", 
-  [
-   "DQJ-Q-SQ-A-400", 
-   "30dB", 
-   "air return - Rotational", 
-   "Nawiewnik wirowy prostokatny z izolowana skrzynka rozprezna, bez przepustnicy, z kroccem okrag\u0142ym DQJA-SR-400 \u0444160."
-  ]
- ], 
- [
-  "0453-0749", 
-  [
-   "DQJ-Q-SQ-A-500", 
-   "30dB", 
-   "air return - Rotational", 
-   "Nawiewnik wirowy prostokatny z izolowana skrzynka rozprezna, bez przepustnicy, z kroccem okrag\u0142ym DQJA-SR-500 \u0444200."
-  ]
- ], 
- [
-  "0750-1287", 
-  [
-   "DQJ-Q-SQ-A-600", 
-   "30dB", 
-   "air return - Rotational", 
-   "Nawiewnik wirowy prostokatny z izolowana skrzynka rozprezna, bez przepustnicy, z kroccem okrag\u0142ym DQJA-SR-600 \u0444250."
-  ]
- ], 
- [
-  "1288-1636", 
-  [
-   "DQJ-Q-SQ-A-800", 
-   "30dB", 
-   "air return - Rotational", 
-   "Nawiewnik wirowy prostokatny z izolowana skrzynka rozprezna, bez przepustnicy, z kroccem okrag\u0142ym DQJA-SR-800 \u0444350."
-  ]
- ], 
- [
-  "0001-0352", 
-  [
-   "DQJ-Q-SQ-A-310", 
-   "25dB", 
-   "air return - Rotational", 
-   "Nawiewnik wirowy prostokatny z izolowana skrzynka rozprezna, bez przepustnicy, z kroccem okrag\u0142ym DQJA-SR-310 \u0444160."
-  ]
- ], 
- [
-  "0353-0367", 
-  [
-   "DQJ-Q-SQ-A-400", 
-   "25dB", 
-   "air return - Rotational", 
-   "Nawiewnik wirowy prostokatny z izolowana skrzynka rozprezna, bez przepustnicy, z kroccem okrag\u0142ym DQJA-SR-400 \u0444160."
-  ]
- ], 
- [
-  "0368-0609", 
-  [
-   "DQJ-Q-SQ-A-500", 
-   "25dB", 
-   "air return - Rotational", 
-   "Nawiewnik wirowy prostokatny z izolowana skrzynka rozprezna, bez przepustnicy, z kroccem okrag\u0142ym DQJA-SR-500 \u0444200."
-  ]
- ], 
- [
-  "0610-1080", 
-  [
-   "DQJ-Q-SQ-A-600", 
-   "25dB", 
-   "air return - Rotational", 
-   "Nawiewnik wirowy prostokatny z izolowana skrzynka rozprezna, bez przepustnicy, z kroccem okrag\u0142ym DQJA-SR-600 \u0444250."
-  ]
- ], 
- [
-  "1081-1381", 
-  [
-   "DQJ-Q-SQ-A-800", 
-   "25dB", 
-   "air return - Rotational", 
-   "Nawiewnik wirowy prostokatny z izolowana skrzynka rozprezna, bez przepustnicy, z kroccem okrag\u0142ym DQJA-SR-800 \u0444350."
-  ]
- ] 
+ ]
 ]

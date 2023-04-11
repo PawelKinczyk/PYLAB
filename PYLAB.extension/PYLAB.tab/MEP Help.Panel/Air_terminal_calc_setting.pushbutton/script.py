@@ -98,12 +98,14 @@ if selected_function == None or selected_system == None:
 
 # Set path to json with settings
 path_to_json = os.path.dirname(os.path.abspath(os.path.join(__file__, "../")))
-if selected_system == True:
+if selected_system["Supply(left)/Return(right)"] == False:
     path_to_json = os.path.join(
         path_to_json, "Air_terminal_calc_supply.pushbutton/air_terminals_supply_settings.json")
-else:
+elif selected_system["Supply(left)/Return(right)"] == True:
     path_to_json = os.path.join(
         path_to_json, "Air_terminal_calc_return.pushbutton/air_terminals_return_settings.json")
+else:
+    pass
 
 # Main program
 if selected_function == "Add air terminal":
