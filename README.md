@@ -6,7 +6,7 @@ This is my project to improve Revit functions by adding my own by using PyRevit.
 ## Authors
 
 - [Paweł Kińczyk](https://produktywnyprojektant.com/o-mnie/) MEP designer and hobby programmer
-
+## $\textcolor{red}{\textsf{Important!!! My addin works only with english language in revit (many functions use english names of categories)}}$
 ## <span style="color:red">Important!!! My addin works only with english language in revit (many functions use english names of categories)</span>
 
 ## Functions
