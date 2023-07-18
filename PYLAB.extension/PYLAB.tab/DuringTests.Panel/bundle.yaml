@@ -2,3 +2,5 @@ layout:
   - BatchNWC
   - -----
   - BatchDetachedModel
+  - -----
+  - WallsFromAECVision
