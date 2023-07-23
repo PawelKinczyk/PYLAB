@@ -11,6 +11,15 @@ doc = __revit__.ActiveUIDocument.Document
 
 ## def / class
 
+### Change string to float i dict
+def float_values(trips):
+    for key, value in trips.items():
+        try:
+            if key in ["ymin", "ymax", "xmin", "xmax"]:
+                trips[key] = float(value)
+        except ValueError:
+            continue
+
 ## Pick file with csv
 csv_file_path = forms.pick_file(title="Pick file with exported csv")
 
@@ -38,47 +47,52 @@ scale = float(lenght_real_centimeters) / float(lenght_pixels)
 ### Import csv
 data_file = []
 with open(csv_file_path) as csvfile:
-    data = csv.DictReader(csvfile, delimiter=',', quotechar='|')
+    data = csv.DictReader(csvfile, delimiter=',') #, quotechar='|'
     for row in data:
         data_file.append(row)
 
 print(data_file)
 
+for dict in data_file:
+    float_values(dict)
+
+
+
 ## Create walls
 
 ### Collect levels and walls types
-levels = FilteredElementCollector(doc).OfCategory(BuildInCategory.OST_Levels).WhereElementIsNotElementType().ToElements()
-walls = FilteredElementCollector(doc).OfCategory(BuildInCategory.OST_Walls).WhereElementIsNotElementType().ToElements()
+levels = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_Levels).WhereElementIsNotElementType().ToElements()
+walls = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_Walls).WhereElementIsElementType().ToElements()
 
 ### Collect walls curves
 curves_list = []
 for dict in data_file:
     a = dict["xmax"] - dict["xmin"]
-    b = dict["ymax"] - dict["ymin"]
-    if a>b:
-        x1 = dict["xmax"]
+    b = abs(dict["ymax"] - dict["ymin"])
+    if a>=b:
+        x1 = dict["xmin"]
+        x2 = dict["xmax"]
+        y1 = dict["ymin"] + (dict["ymax"]-dict["ymin"])/2
+        y2 = dict["ymin"] + (dict["ymax"]-dict["ymin"])/2
+    else:
+        x1 = dict["xmin"] + (dict["xmax"]-dict["xmin"])/2
+        x2 = dict["xmin"] + (dict["xmax"]-dict["xmin"])/2
+        y1 = dict["ymin"]
+        y2 = dict["ymax"]
+    print("{},{},{},{}".format(x1, y1, x2, y2))
+    point_1 = XYZ(x1/30.48 , y1/30.48 , levels[0].Elevation)
+    point_2 = XYZ(x2/30.48 , y2/30.48 , levels[0].Elevation)
+    wall_line = Line.CreateBound(point_1, point_2)
+    curves_list.append(wall_line)
 
-# open_options = OpenOptions()
-# open_options.DetachFromCentralOption = DetachFromCentralOption.DetachAndPreserveWorksets
 
-# name=0
 
-# for revit_model in models_paths:
-# 	revit_model_path = ModelPathUtils.ConvertUserVisiblePathToModelPath(revit_model)
-# 	doc_nwc = __revit__.Application.OpenDocumentFile(revit_model_path, open_options)	
-# 	# NWCExportScope = System.Enum.GetValues(NavisworksExportScope)[1]
-# 	# ChooseCoordinates = System.Enum.GetValues(NavisworksCoordinates)[0]
-# 	Linksbool = False
-# 	views = FilteredElementCollector(doc_nwc).OfCategory(BuiltInCategory.OST_Views).WhereElementIsNotElementType().ToElements()
-# 	name=revit_model
-# 	for view in views:
-# 		if view.IsTemplate != True and str(view.Name)==view_name_3D:
-# 			view_export = view
-			
-# 			ExportNWC(str(name), view_export, models_folder, doc_nwc)
-# 			print(view_export)
-# 	print(name)
-# 	doc_nwc.Close(False)
-
-# print(view_name_3D)
-
+t = Transaction(doc, "Wall import - PYLAB")
+t.Start()
+# point_1 = XYZ(100, 100, levels[0].Elevation)
+# point_2 = XYZ(300, 100, levels[0].Elevation)
+# wall_line = Line.CreateBound(point_1, point_2)
+# Wall.Create(doc, wall_line, walls[0].Id, levels[0].Id, 3000/304.8, 0, False, True)
+for line in curves_list:
+    Wall.Create(doc, line, walls[0].Id, levels[0].Id, 3000/304.8, 0, False, True)
+t.Commit()
