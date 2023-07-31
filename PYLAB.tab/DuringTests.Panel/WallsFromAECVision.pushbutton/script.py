@@ -104,8 +104,12 @@ except:
     forms.alert(title="Program Error",
                 msg="You canceled wall choosing", exitscript=True)
 walls_list = []
-for wall_name in selected_walls:
-    walls_list.append((walls_dict[wall_name], walls_dict[wall_name].Width))
+try:
+    for wall_name in selected_walls:
+        walls_list.append((walls_dict[wall_name], walls_dict[wall_name].Width))
+except:
+    forms.alert(title="Program Error",
+                msg="The wall(s) list is empty", exitscript=True)
 ### Ask for level
 try:
     levels_dict = {x.Name: x for x in levels}
