@@ -6,6 +6,7 @@ from Autodesk.Revit.DB import *
 from pyrevit import forms
 from pyrevit import output
 import csv
+import math
 
 doc = __revit__.ActiveUIDocument.Document
 
@@ -102,7 +103,7 @@ walls, walls_thickness = map(list, zip(*walls_list))
 t = Transaction(doc, "Wall import - PYLAB")
 t.Start()
 for line, thickness in curves_list:
-    wall_index = min(range(len(walls_thickness)), key=lambda i: abs(wall_thickness[i]-thickness))
+    wall_index = min(range(len(walls_thickness)), key=lambda i: math.fabs(wall_thickness[i]-thickness))
     
     Wall.Create(doc, line, walls[wall_index].Id, levels_dict[selected_level].Id, 3000/304.8, 0, False, True)
 t.Commit()
