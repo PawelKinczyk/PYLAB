@@ -83,18 +83,18 @@ for dict in data_file:
     if a>=b:
         x1 = dict["xmin"]
         x2 = dict["xmax"]
-        y1 = dict["ymin"] + (dict["ymax"]-dict["ymin"])/2
-        y2 = dict["ymin"] + (dict["ymax"]-dict["ymin"])/2
-        wall_thickness = b/30.48
+        y1 = (dict["ymin"] + (dict["ymax"]-dict["ymin"])/2)
+        y2 = (dict["ymin"] + (dict["ymax"]-dict["ymin"])/2)
+        wall_thickness = (b/30.48)*scale
     else:
-        x1 = dict["xmin"] + (dict["xmax"]-dict["xmin"])/2
-        x2 = dict["xmin"] + (dict["xmax"]-dict["xmin"])/2
+        x1 = (dict["xmin"] + (dict["xmax"]-dict["xmin"])/2)
+        x2 = (dict["xmin"] + (dict["xmax"]-dict["xmin"])/2)
         y1 = dict["ymin"]
         y2 = dict["ymax"]
-        wall_thickness = a/30.48
+        wall_thickness = (a/30.48)*scale
     print("{},{},{},{},{}".format(x1, y1, x2, y2, wall_thickness))
-    point_1 = XYZ(x1/30.48 , y1/30.48 , levels[0].Elevation)
-    point_2 = XYZ(x2/30.48 , y2/30.48 , levels[0].Elevation)
+    point_1 = XYZ((x1/30.48)*scale , (y1/30.48)*scale , levels_dict[selected_level].Elevation)
+    point_2 = XYZ((x2/30.48)*scale , (y2/30.48)*scale , levels_dict[selected_level].Elevation)
     wall_line = Line.CreateBound(point_1, point_2)
     curves_list.append((wall_line, wall_thickness))
 
