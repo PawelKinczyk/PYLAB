@@ -65,7 +65,7 @@ levels = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_Levels).Wh
 walls = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_Walls).WhereElementIsElementType().ToElements()
 
 ### Ask which wall(s) use
-walls_dict = {x.Name : x for x in walls}
+walls_dict = {Element.Name.GetValue(x) : x for x in walls}
 selected_walls = forms.SelectFromList.show(walls_dict.keys(), title = "Select walls to use", multiselect=True,button_name='Select walls to use')
 
 ### Ask for level
