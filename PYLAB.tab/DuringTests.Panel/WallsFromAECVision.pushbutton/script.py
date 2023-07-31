@@ -11,7 +11,7 @@ doc = __revit__.ActiveUIDocument.Document
 
 ## def / class
 
-### Change string to float i dict
+### Change string to float and dict
 def float_values(trips):
     for key, value in trips.items():
         try:
@@ -24,7 +24,7 @@ def float_values(trips):
 csv_file_path = forms.pick_file(title="Pick file with exported csv")
 
 
-## Ask for 3D view name to export
+## Ask for measured lenght in jpg image
 
 lenght_pixels = forms.ask_for_string(
     default='Write what is the lenght of measure object in pixels',
@@ -63,6 +63,14 @@ for dict in data_file:
 ### Collect levels and walls types
 levels = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_Levels).WhereElementIsNotElementType().ToElements()
 walls = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_Walls).WhereElementIsElementType().ToElements()
+
+### Ask which wall(s) use
+walls_dict = {x.Name : x for x in walls}
+selected_walls = forms.SelectFromList.show(walls_dict.keys(), title = "Select walls to use", multiselect=True,button_name='Select walls to use')
+
+### Ask for level
+levels_dict = {x.Name : x for x in levels}
+selected_level = forms.SelectFromList.show(levels_dict.keys(), title = "Select level", multiselect=False,button_name='Select level')
 
 ### Collect walls curves
 curves_list = []
