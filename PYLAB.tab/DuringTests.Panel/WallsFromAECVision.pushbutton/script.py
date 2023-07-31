@@ -92,18 +92,20 @@ for dict in data_file:
         y1 = dict["ymin"]
         y2 = dict["ymax"]
         wall_thickness = a/30.48
-    print("{},{},{},{}".format(x1, y1, x2, y2))
+    print("{},{},{},{},{}".format(x1, y1, x2, y2, wall_thickness))
     point_1 = XYZ(x1/30.48 , y1/30.48 , levels[0].Elevation)
     point_2 = XYZ(x2/30.48 , y2/30.48 , levels[0].Elevation)
     wall_line = Line.CreateBound(point_1, point_2)
     curves_list.append((wall_line, wall_thickness))
 
 walls, walls_thickness = map(list, zip(*walls_list))
-
+print(walls)
+print(walls_thickness)
 t = Transaction(doc, "Wall import - PYLAB")
 t.Start()
 for line, thickness in curves_list:
-    wall_index = min(range(len(walls_thickness)), key=lambda i: math.fabs(wall_thickness[i]-thickness))
+    print(thickness)
+    wall_index = min(range(len(walls_thickness)), key=lambda i: abs(wall_thickness[i]-thickness))
     
     Wall.Create(doc, line, walls[wall_index].Id, levels_dict[selected_level].Id, 3000/304.8, 0, False, True)
 t.Commit()
