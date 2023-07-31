@@ -95,7 +95,7 @@ for dict in data_file:
     point_1 = XYZ(x1/30.48 , y1/30.48 , levels[0].Elevation)
     point_2 = XYZ(x2/30.48 , y2/30.48 , levels[0].Elevation)
     wall_line = Line.CreateBound(point_1, point_2)
-    curves_list.append(wall_line, wall_thickness)
+    curves_list.append((wall_line, wall_thickness))
 
 walls, walls_thickness = zip(*walls_list)
 
