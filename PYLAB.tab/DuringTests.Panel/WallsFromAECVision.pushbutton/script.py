@@ -102,7 +102,7 @@ walls, walls_thickness = zip(*walls_list)
 t = Transaction(doc, "Wall import - PYLAB")
 t.Start()
 for line, thickness in curves_list:
-    wall_index = min(range(len(walls_thickness)), key=lambda i: abs(a[i]-thickness))
+    wall_index = min(range(walls_thickness.size), key=lambda i: abs(a[i]-thickness))
     
     Wall.Create(doc, line, walls[wall_index].Id, levels_dict[selected_level].Id, 3000/304.8, 0, False, True)
 t.Commit()
