@@ -67,7 +67,9 @@ walls = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_Walls).Wher
 ### Ask which wall(s) use
 walls_dict = {Element.Name.GetValue(x) : x for x in walls}
 selected_walls = forms.SelectFromList.show(walls_dict.keys(), title = "Select walls to use", multiselect=True,button_name='Select walls to use')
-
+walls_list = []
+for wall_name in selected_walls:
+    walls_list.append((walls_dict[wall_name], walls_dict[wall_name].Width))
 ### Ask for level
 levels_dict = {x.Name : x for x in levels}
 selected_level = forms.SelectFromList.show(levels_dict.keys(), title = "Select level", multiselect=False,button_name='Select level')
@@ -82,25 +84,25 @@ for dict in data_file:
         x2 = dict["xmax"]
         y1 = dict["ymin"] + (dict["ymax"]-dict["ymin"])/2
         y2 = dict["ymin"] + (dict["ymax"]-dict["ymin"])/2
+        wall_thickness = b/30.48
     else:
         x1 = dict["xmin"] + (dict["xmax"]-dict["xmin"])/2
         x2 = dict["xmin"] + (dict["xmax"]-dict["xmin"])/2
         y1 = dict["ymin"]
         y2 = dict["ymax"]
+        wall_thickness = a/30.48
     print("{},{},{},{}".format(x1, y1, x2, y2))
     point_1 = XYZ(x1/30.48 , y1/30.48 , levels[0].Elevation)
     point_2 = XYZ(x2/30.48 , y2/30.48 , levels[0].Elevation)
     wall_line = Line.CreateBound(point_1, point_2)
-    curves_list.append(wall_line)
+    curves_list.append(wall_line, wall_thickness)
 
-
+walls, walls_thickness = zip(*walls_list)
 
 t = Transaction(doc, "Wall import - PYLAB")
 t.Start()
-# point_1 = XYZ(100, 100, levels[0].Elevation)
-# point_2 = XYZ(300, 100, levels[0].Elevation)
-# wall_line = Line.CreateBound(point_1, point_2)
-# Wall.Create(doc, wall_line, walls[0].Id, levels[0].Id, 3000/304.8, 0, False, True)
-for line in curves_list:
-    Wall.Create(doc, line, walls[0].Id, levels[0].Id, 3000/304.8, 0, False, True)
+for line, thickness in curves_list:
+    wall_index = min(range(len(wall_thickness)), key=lambda i: abs(a[i]-thickness))
+    
+    Wall.Create(doc, line, walls[wall_index].Id, levels_dict[selected_level].Id, 3000/304.8, 0, False, True)
 t.Commit()
