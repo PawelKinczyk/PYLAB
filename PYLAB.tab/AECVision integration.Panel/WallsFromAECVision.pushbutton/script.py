@@ -68,6 +68,7 @@ with open(csv_file_path) as csvfile:
 for dict in data_file:
     float_values(dict)
 
+print(data_file)
 
 ## Create walls
 
