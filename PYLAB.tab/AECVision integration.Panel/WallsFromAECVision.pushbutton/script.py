@@ -157,8 +157,8 @@ for dict in data_file:
         y1 = dict["ymin"]
         y2 = dict["ymax"]
         wall_thickness = a * scale
-    print("{},{},{},{},{}".format(x1, y1, x2, y2, wall_thickness))
-    # Wemust division by 30.48 because we need to translate centimeters to inches
+    
+    # We must division by 30.48 because we need to translate centimeters to inches
     point_1 = XYZ(
         (x1 / 30.48) * scale,
         (y1 / 30.48) * scale,
@@ -182,7 +182,6 @@ t.Start()
 try:
     #### Iterate throught lines
     for line, thickness in curves_list:
-        print(thickness)
         #### Get closest wall thickness
         wall_index = min(
             range(len(walls_thickness)),
