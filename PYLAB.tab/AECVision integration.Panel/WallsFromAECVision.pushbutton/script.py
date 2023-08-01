@@ -150,8 +150,8 @@ for dict in data_file:
     ):  # measure which side is longer this tell us which dimension is lenght and width
         x1 = dict["xmin"]
         x2 = dict["xmax"]
-        y1 = dict["ymin"] + abs(dict["ymax"] - dict["ymin"]) / 2
-        y2 = dict["ymin"] + abs(dict["ymax"] - dict["ymin"]) / 2
+        y1 = dict["ymin"] + (dict["ymax"] - dict["ymin"]) / 2
+        y2 = dict["ymin"] + (dict["ymax"] - dict["ymin"]) / 2
         wall_thickness = b * scale
     else:
         x1 = dict["xmin"] + (dict["xmax"] - dict["xmin"]) / 2
@@ -173,6 +173,7 @@ for dict in data_file:
     )
     # Create and collect revit curves with detected walls thickness
     wall_line = Line.CreateBound(point_1, point_2)
+    print("p1 {} p2 {}".format(point_1.ToString, point_2.ToString))
     curves_list.append((wall_line, wall_thickness / 30.48))
 
 ### Unzip picked walls with their thickness
