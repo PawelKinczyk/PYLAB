@@ -31,25 +31,18 @@ except:
                 msg="You didn't pick csv file", exitscript=True)
 
 ## Ask for measured lenght in jpg image
-try:
-    lenght_real_centimeters = forms.ask_for_string(
-        default="Write what is the real lenght of measure object in centimeters",
-        prompt="Set value",
-        title="Real lenght",
-    )
-except:
-    forms.alert(title="Program Error",
-                msg="You didn't write anything", exitscript=True)
 
-try:
-    lenght_pixels = forms.ask_for_string(
-        default="Write what is the lenght of measure object in pixels",
-        prompt="Set value",
-        title="Pixels lenght",
-    )
-except:
-    forms.alert(title="Program Error",
-                msg="You didn't choose anything", exitscript=True)
+lenght_real_centimeters = forms.ask_for_string(
+    default="Write what is the real lenght of measure object in centimeters",
+    prompt="Set value",
+    title="Real lenght",
+)
+
+lenght_pixels = forms.ask_for_string(
+    default="Write what is the lenght of measure object in pixels",
+    prompt="Set value",
+    title="Pixels lenght",
+)
 
 ## Calculate scale
 try:
@@ -60,6 +53,7 @@ except ValueError:
 except:
         forms.alert(title="Program Error",
                 msg="You wrote wrong lenght value in centimeters or pixels", exitscript=True)   
+
 ## Create walls
 
 ### Import csv
@@ -111,6 +105,7 @@ for wall_name in selected_walls:
 
     forms.alert(title="Program Error",
                 msg="The wall(s) list is empty", exitscript=True)
+
 ### Ask for level
 try:
     levels_dict = {x.Name: x for x in levels}
@@ -124,6 +119,16 @@ try:
 except:
     forms.alert(title="Program Error",
                 msg="You canceled level choosing or didn't pick anything", exitscript=True)
+
+### Ask for hight of import walls
+
+height_of_walls = forms.ask_for_string(
+    default="Write height of walls in centimeters",
+    prompt="Set value",
+    title="Walls height",
+)
+
+
 ### Collect walls curves
 curves_list = []
 for dict in data_file:
@@ -158,22 +163,25 @@ for dict in data_file:
 walls, walls_thickness = map(list, zip(*walls_list))
 print(walls)
 print(walls_thickness)
-t = Transaction(doc, "Wall import - PYLAB")
+t = Transaction(doc, "Walls from AECVision - PYLAB")
 t.Start()
-for line, thickness in curves_list:
-    print(thickness)
-    wall_index = min(
-        range(len(walls_thickness)), key=lambda i: abs(walls_thickness[i] - thickness)
-    )
+try:
+    for line, thickness in curves_list:
+        print(thickness)
+        wall_index = min(
+            range(len(walls_thickness)), key=lambda i: abs(walls_thickness[i] - thickness)
+        )
 
-    Wall.Create(
-        doc,
-        line,
-        walls[wall_index].Id,
-        levels_dict[selected_level].Id,
-        3000 / 304.8,
-        0,
-        False,
-        True,
-    )
+        Wall.Create(
+            doc,
+            line,
+            walls[wall_index].Id,
+            levels_dict[selected_level].Id,
+            height_of_walls / 30.48,
+            0,
+            False,
+            True,
+        )
+except Exception as e:
+    forms.alert(title="Program Error", msg=e, exitscript=True)
 t.Commit()
