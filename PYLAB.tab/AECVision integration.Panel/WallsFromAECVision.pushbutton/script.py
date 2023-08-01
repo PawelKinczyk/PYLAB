@@ -9,7 +9,6 @@ doc = __revit__.ActiveUIDocument.Document
 
 ## def / class
 
-
 ### Change string to float in dict
 def float_values(trips):
     for key, value in trips.items():
@@ -151,8 +150,8 @@ for dict in data_file:
     ):  # measure which side is longer this tell us which dimension is lenght and width
         x1 = dict["xmin"]
         x2 = dict["xmax"]
-        y1 = dict["ymin"] + (dict["ymax"] - dict["ymin"]) / 2
-        y2 = dict["ymin"] + (dict["ymax"] - dict["ymin"]) / 2
+        y1 = dict["ymin"] + abs(dict["ymax"] - dict["ymin"]) / 2
+        y2 = dict["ymin"] + abs(dict["ymax"] - dict["ymin"]) / 2
         wall_thickness = b * scale
     else:
         x1 = dict["xmin"] + (dict["xmax"] - dict["xmin"]) / 2
