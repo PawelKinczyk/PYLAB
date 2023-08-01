@@ -100,14 +100,15 @@ try:
         multiselect=True,
         button_name="Select walls to use",
     )
+    if selected_walls == None: raise Exception
 except:
     forms.alert(title="Program Error",
-                msg="You canceled wall choosing", exitscript=True)
+                msg="You canceled wall choosing or didn't pick anything", exitscript=True)
 walls_list = []
-try:
-    for wall_name in selected_walls:
-        walls_list.append((walls_dict[wall_name], walls_dict[wall_name].Width))
-except:
+
+for wall_name in selected_walls:
+    walls_list.append((walls_dict[wall_name], walls_dict[wall_name].Width))
+
     forms.alert(title="Program Error",
                 msg="The wall(s) list is empty", exitscript=True)
 ### Ask for level
@@ -119,9 +120,10 @@ try:
         multiselect=False,
         button_name="Select level",
     )
+    if selected_walls == None: raise Exception
 except:
     forms.alert(title="Program Error",
-                msg="You canceled level choosing", exitscript=True)
+                msg="You canceled level choosing or didn't pick anything", exitscript=True)
 ### Collect walls curves
 curves_list = []
 for dict in data_file:
