@@ -150,13 +150,13 @@ for dict in data_file:
         x2 = dict["xmax"]
         y1 = dict["ymin"] + (dict["ymax"] - dict["ymin"]) / 2
         y2 = dict["ymin"] + (dict["ymax"] - dict["ymin"]) / 2
-        wall_thickness = b
+        wall_thickness = b * scale
     else:
         x1 = dict["xmin"] + (dict["xmax"] - dict["xmin"]) / 2
         x2 = dict["xmin"] + (dict["xmax"] - dict["xmin"]) / 2
         y1 = dict["ymin"]
         y2 = dict["ymax"]
-        wall_thickness = a
+        wall_thickness = a * scale
     print("{},{},{},{},{}".format(x1, y1, x2, y2, wall_thickness))
     # Wemust division by 30.48 because we need to translate centimeters to inches
     point_1 = XYZ(
@@ -203,5 +203,3 @@ except Exception as e:
     forms.alert(title="Program Error", msg=e, exitscript=True)
 t.Commit()
 
-if __name__ == "__main__":
-    main()
