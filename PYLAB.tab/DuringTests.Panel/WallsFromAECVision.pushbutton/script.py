@@ -174,7 +174,7 @@ try:
             line,
             walls[wall_index].Id,
             levels_dict[selected_level].Id,
-            height_of_walls / 30.48,
+            float(height_of_walls) / 30.48,
             0,
             False,
             True,
