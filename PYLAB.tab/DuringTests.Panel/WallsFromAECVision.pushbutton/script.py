@@ -100,7 +100,7 @@ try:
         multiselect=True,
         button_name="Select walls to use",
     )
-    if selected_walls == None: raise Exception
+    if len(selected_walls) == 0: raise Exception
 except:
     forms.alert(title="Program Error",
                 msg="You canceled wall choosing or didn't pick anything", exitscript=True)
@@ -120,7 +120,7 @@ try:
         multiselect=False,
         button_name="Select level",
     )
-    if selected_walls == None: raise Exception
+    if len(selected_level) == 0: raise Exception
 except:
     forms.alert(title="Program Error",
                 msg="You canceled level choosing or didn't pick anything", exitscript=True)
