@@ -60,7 +60,7 @@ except:
 ### Import csv
 data_file = []
 with open(csv_file_path) as csvfile:
-    data = csv.DictReader(csvfile, delimiter=",") 
+    data = csv.DictReader(csvfile, delimiter=",")
     for row in data:
         data_file.append(row)
 
@@ -145,7 +145,9 @@ curves_list = []
 for dict in data_file:
     a = dict["xmax"] - dict["xmin"]
     b = abs(dict["ymax"] - dict["ymin"])
-    if a >= b: # measure which side is longer this tell us which dimension is lenght and width
+    if (
+        a >= b
+    ):  # measure which side is longer this tell us which dimension is lenght and width
         x1 = dict["xmin"]
         x2 = dict["xmax"]
         y1 = dict["ymin"] + (dict["ymax"] - dict["ymin"]) / 2
@@ -157,26 +159,26 @@ for dict in data_file:
         y1 = dict["ymin"]
         y2 = dict["ymax"]
         wall_thickness = a * scale
-    
+
     # We must division by 30.48 because we need to translate centimeters to inches
     point_1 = XYZ(
-        (x1 / 30.48) * scale,
-        (y1 / 30.48) * scale,
+        (x1 * scale) / 30.48,
+        (y1 * scale) / 30.48,
         levels_dict[selected_level].Elevation,
     )
     point_2 = XYZ(
-        (x2 / 30.48) * scale,
-        (y2 / 30.48) * scale,
+        (x2 * scale) / 30.48,
+        (y2 * scale) / 30.48,
         levels_dict[selected_level].Elevation,
     )
     # Create and collect revit curves with detected walls thickness
     wall_line = Line.CreateBound(point_1, point_2)
-    curves_list.append((wall_line, wall_thickness/30.48))
+    curves_list.append((wall_line, wall_thickness / 30.48))
 
 ### Unzip picked walls with their thickness
 walls, walls_thickness = map(list, zip(*walls_list))
 
-### Start placing walls 
+### Start placing walls
 t = Transaction(doc, "Walls from AECVision - PYLAB")
 t.Start()
 try:
@@ -201,4 +203,3 @@ try:
 except Exception as e:
     forms.alert(title="Program Error", msg=e, exitscript=True)
 t.Commit()
-
