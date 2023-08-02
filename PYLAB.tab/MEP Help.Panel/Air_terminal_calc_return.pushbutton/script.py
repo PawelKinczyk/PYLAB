@@ -72,7 +72,7 @@ for dqj in dqj_list:
         new_dqj = tuple([air_flow_avaible])+tuple(dqj[1])
         correct_dqj.append(new_dqj)
 
-# Select ait terminal type
+# Select air terminal type
 try:
     selected_dqj = forms.SelectFromList.show(
         correct_dqj, title="Select air terminal which you want to pick", multiselect=False, button_name='Select DQJ', width=800)
