@@ -67,8 +67,6 @@ with open(csv_file_path) as csvfile:
 for dict in data_file:
     float_values(dict)
 
-print(data_file)
-
 ## Create walls
 
 ### Collect levels and walls types
@@ -159,7 +157,7 @@ for dict in data_file:
         y1 = dict["ymin"]
         y2 = dict["ymax"]
         wall_thickness = a * scale
-    print("{} p1 {},{} p2 {},{}".format(dict[""],x1, y1, x2, y2))
+
     # We must division by 30.48 because we need to translate centimeters to inches
     point_1 = XYZ(
         (x1 * scale) / 30.48,
@@ -173,7 +171,6 @@ for dict in data_file:
     )
     # Create and collect revit curves with detected walls thickness
     wall_line = Line.CreateBound(point_1, point_2)
-    print("p1r {} p2r {}".format(point_1.ToString(), point_2.ToString()))
     curves_list.append((wall_line, wall_thickness / 30.48))
 
 ### Unzip picked walls with their thickness
