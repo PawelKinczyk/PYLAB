@@ -159,7 +159,7 @@ for dict in data_file:
         y1 = dict["ymin"]
         y2 = dict["ymax"]
         wall_thickness = a * scale
-    print("p1 {},{} p2 {},{}".format(x1, y1, x2, y2))
+    print("{} p1 {},{} p2 {},{}".format(dict[""],x1, y1, x2, y2))
     # We must division by 30.48 because we need to translate centimeters to inches
     point_1 = XYZ(
         (x1 * scale) / 30.48,
