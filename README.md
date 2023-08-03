@@ -3,6 +3,14 @@
 
 This is my project to improve Revit functions by adding my own using PyRevit. I'm new in programming so if you see something to improve please write to me! If you want to use my addins go ahead and download the PYLAB repository. I will be glad!
 
+## Installation
+Now you can install my extension in this way:
+1. Install [pyRevit](https://github.com/eirannejad/pyRevit)
+2. Add my extension to pyRevit:
+   - Open "Command Prompt" by shortcut `Win + R` or type `cmd` in file explorer
+   - Type this command `pyrevit extend ui PYLAB https://github.com/PawelKinczyk/PYLAB.git`
+3. A panel **PYLAB** will be available after next Revit start
+
 ## Authors
 
 - [Paweł Kińczyk](https://produktywnyprojektant.com/o-mnie/) MEP designer and hobby programmer
