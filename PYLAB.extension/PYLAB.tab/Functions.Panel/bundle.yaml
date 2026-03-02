@@ -12,3 +12,7 @@ layout:
   - SpaceSearch
   - -----
   - BatchChangeType
+  - -----
+  - MeasureElem
+  - -----
+  - PipeDuctOffset

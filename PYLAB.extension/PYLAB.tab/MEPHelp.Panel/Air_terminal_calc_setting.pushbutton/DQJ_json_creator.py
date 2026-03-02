@@ -65,5 +65,13 @@ air_terminals_supply_settings = [["0001-0252", ("DQJ-Q-SR-Z-310", "35dB", "air s
 json_object = json.dumps(air_terminals_supply_settings, indent=1)
 print(json_object)
 
-with open("PYLAB.extension\PYLAB.tab\DuringTests.Panel\Air_terminal_calc.pushbutton\\air_terminals_supply_settings.json", "w") as outfile:
+settings_path = os.path.join(
+    os.path.dirname(__file__),
+    "..",
+    "Air_terminal_calc_supply.pushbutton",
+    "air_terminals_supply_settings.json",
+)
+settings_path = os.path.abspath(settings_path)
+
+with open(settings_path, "w") as outfile:
     json.dump(air_terminals_supply_settings, outfile, indent=1)
