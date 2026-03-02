@@ -1,4 +1,4 @@
-﻿# PYLAB
+# PYLAB
 
 PYLAB is a pyRevit extension that adds custom productivity tools for Revit.
 
@@ -9,7 +9,6 @@ PYLAB is a pyRevit extension that adds custom productivity tools for Revit.
 ## Repository Structure
 - `PYLAB.extension/` main pyRevit extension package
 - `PYLAB.extension/PYLAB.tab/` production tools
-- `PYLAB.extension/PYLABDev.tab/` developer/test tools
 - `PYLAB.extension/lib/pylab/` shared Python helpers
 - `docs/` install, migration, update, and authoring docs
 
