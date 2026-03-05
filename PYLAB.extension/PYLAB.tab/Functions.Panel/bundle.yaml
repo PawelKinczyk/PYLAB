@@ -1,6 +1,8 @@
 layout:
   - LinkedElemID
   - -----
+  - Element3DFocus
+  - -----
   - AddIns
   - -----
   - CopyParameter
