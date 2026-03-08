@@ -13,6 +13,8 @@ layout:
   - -----
   - SpaceSearch
   - -----
+  - PlaceInRoomsSpaces
+  - -----
   - BatchChangeType
   - -----
   - MeasureElem
