@@ -55,15 +55,41 @@ SPEC_TYPE_ID = getattr(DB, "SpecTypeId", None)
 UNIT_TYPE = getattr(DB, "UnitType", None)
 
 
-EXCLUDED_CATEGORY_IDS = set([
-    int(BuiltInCategory.OST_GenericAnnotation),
-    int(BuiltInCategory.OST_DetailComponents),
-    int(BuiltInCategory.OST_TitleBlocks),
-    int(BuiltInCategory.OST_Viewports),
-    int(BuiltInCategory.OST_Views),
-    int(BuiltInCategory.OST_Cameras),
-    int(BuiltInCategory.OST_ProfileFamilies),
-])
+EXCLUDED_CATEGORY_NAMES = [
+    "OST_GenericAnnotation",
+    "OST_DetailComponents",
+    "OST_TitleBlocks",
+    "OST_Viewports",
+    "OST_Views",
+    "OST_Cameras",
+    "OST_ProfileFamilies",
+    "OST_CurtainWallPanels",
+    "OST_CurtainWallMullions",
+    "OST_CurtainGrids",
+    "OST_Curtain_Systems",
+    "OST_StairsRuns",
+    "OST_StairsLandings",
+    "OST_StairsSupports",
+    "OST_RailingBaluster",
+    "OST_RailingTopRail",
+    "OST_RailingHandRail",
+    "OST_Parts",
+    "OST_DividedSurface",
+    "OST_PatternGrid",
+]
+
+
+def build_excluded_category_ids():
+    excluded_category_ids = set()
+    for category_name in EXCLUDED_CATEGORY_NAMES:
+        category_enum = getattr(BuiltInCategory, category_name, None)
+        if category_enum is None:
+            continue
+        excluded_category_ids.add(int(category_enum))
+    return excluded_category_ids
+
+
+EXCLUDED_CATEGORY_IDS = build_excluded_category_ids()
 
 SUPPORTED_PARAMETER_NAMES = {
     "Room/Space Number": "number",
