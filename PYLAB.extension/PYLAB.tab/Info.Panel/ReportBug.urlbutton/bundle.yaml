@@ -1,0 +1,4 @@
+title: "Report\nBug"
+tooltip: Open the GitHub bug report template in your default web browser.
+author: Pawel Kinczyk
+hyperlink: "https://github.com/PawelKinczyk/PYLAB/issues/new?template=bug_report.md"
