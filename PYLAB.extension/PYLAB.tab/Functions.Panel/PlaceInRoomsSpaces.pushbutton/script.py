@@ -20,6 +20,7 @@ clr.AddReference("WindowsBase")
 
 from System import Activator, Environment, Object, Predicate, Type
 from System.Collections.ObjectModel import ObservableCollection
+from System.Reflection import BindingFlags
 from System.Runtime.InteropServices import Marshal
 from System.Windows.Data import CollectionViewSource
 from System.Windows.Media import Brushes
@@ -1028,6 +1029,64 @@ def release_com_object(com_object):
         pass
 
 
+def com_get(com_object, member_name, *args):
+    if com_object is None:
+        raise Exception("Cannot read COM member '{}' from a null object.".format(member_name))
+
+    flags = BindingFlags.GetProperty
+    parameters = args if args else None
+    return com_object.GetType().InvokeMember(
+        member_name,
+        flags,
+        None,
+        com_object,
+        parameters
+    )
+
+
+def com_set(com_object, member_name, value):
+    if com_object is None:
+        raise Exception("Cannot write COM member '{}' on a null object.".format(member_name))
+
+    com_object.GetType().InvokeMember(
+        member_name,
+        BindingFlags.SetProperty,
+        None,
+        com_object,
+        (value,)
+    )
+
+
+def com_call(com_object, member_name, *args):
+    if com_object is None:
+        raise Exception("Cannot call COM member '{}' on a null object.".format(member_name))
+
+    parameters = args if args else None
+    return com_object.GetType().InvokeMember(
+        member_name,
+        BindingFlags.InvokeMethod,
+        None,
+        com_object,
+        parameters
+    )
+
+
+def get_excel_cell(worksheet, row_index, column_index):
+    return com_get(worksheet, "Cells", row_index, column_index)
+
+
+def get_excel_range(worksheet, start_cell, end_cell):
+    return com_get(worksheet, "Range", start_cell, end_cell)
+
+
+def get_excel_collection_item(collection, index):
+    return com_get(collection, "Item", index)
+
+
+def get_excel_collection_count(collection):
+    return int(com_get(collection, "Count"))
+
+
 def get_excel_application():
     excel_type = Type.GetTypeFromProgID("Excel.Application")
     if excel_type is None:
@@ -1038,8 +1097,8 @@ def get_excel_application():
     except Exception as excel_error:
         raise Exception("Could not start Microsoft Excel: {}".format(excel_error))
 
-    excel.Visible = False
-    excel.DisplayAlerts = False
+    com_set(excel, "Visible", False)
+    com_set(excel, "DisplayAlerts", False)
     return excel
 
 
@@ -1080,9 +1139,17 @@ def pick_excel_open_path():
 
 
 def get_excel_worksheet(workbook, sheet_name):
-    for worksheet in workbook.Worksheets:
-        if str(worksheet.Name) == sheet_name:
-            return worksheet
+    worksheets = com_get(workbook, "Worksheets")
+    worksheet_count = get_excel_collection_count(worksheets)
+    try:
+        for worksheet_index in range(1, worksheet_count + 1):
+            worksheet = get_excel_collection_item(worksheets, worksheet_index)
+            if str(com_get(worksheet, "Name")) == sheet_name:
+                return worksheet
+            release_com_object(worksheet)
+            worksheet = None
+    finally:
+        release_com_object(worksheets)
     return None
 
 
@@ -1101,12 +1168,21 @@ def normalize_excel_string(value):
 def build_excel_header_map(worksheet):
     header_map = {}
 
-    used_range = worksheet.UsedRange
-    column_count = used_range.Columns.Count
-    for column_index in range(1, column_count + 1):
-        header_text = normalize_excel_string(worksheet.Cells(EXCEL_HEADER_ROW, column_index).Value2)
-        if header_text:
-            header_map[header_text] = column_index
+    used_range = com_get(worksheet, "UsedRange")
+    columns = com_get(used_range, "Columns")
+    column_count = get_excel_collection_count(columns)
+    try:
+        for column_index in range(1, column_count + 1):
+            cell = get_excel_cell(worksheet, EXCEL_HEADER_ROW, column_index)
+            try:
+                header_text = normalize_excel_string(com_get(cell, "Value2"))
+            finally:
+                release_com_object(cell)
+            if header_text:
+                header_map[header_text] = column_index
+    finally:
+        release_com_object(columns)
+        release_com_object(used_range)
 
     missing_headers = [header for header in EXCEL_REQUIRED_HEADERS if header not in header_map]
     if missing_headers:
@@ -1119,79 +1195,136 @@ def export_rows_to_excel(rows, family_options, file_path):
     excel = None
     workbooks = None
     workbook = None
+    worksheets = None
     main_sheet = None
     list_sheet = None
 
     try:
         excel = get_excel_application()
-        workbooks = excel.Workbooks
-        workbook = workbooks.Add()
-        main_sheet = workbook.Worksheets(1)
-        main_sheet.Name = EXCEL_MAIN_SHEET_NAME
-        list_sheet = workbook.Worksheets.Add()
-        list_sheet.Name = EXCEL_LIST_SHEET_NAME
+        workbooks = com_get(excel, "Workbooks")
+        workbook = com_call(workbooks, "Add")
+        worksheets = com_get(workbook, "Worksheets")
+        main_sheet = get_excel_collection_item(worksheets, 1)
+        com_set(main_sheet, "Name", EXCEL_MAIN_SHEET_NAME)
+        list_sheet = com_call(worksheets, "Add")
+        com_set(list_sheet, "Name", EXCEL_LIST_SHEET_NAME)
 
         for column_index, header in enumerate(EXCEL_REQUIRED_HEADERS, start=1):
-            main_sheet.Cells(EXCEL_HEADER_ROW, column_index).Value2 = header
+            cell = get_excel_cell(main_sheet, EXCEL_HEADER_ROW, column_index)
+            try:
+                com_set(cell, "Value2", header)
+            finally:
+                release_com_object(cell)
 
         for row_index, row in enumerate(rows, start=EXCEL_DATA_START_ROW):
-            main_sheet.Cells(row_index, 1).Value2 = row.SpatialType
-            main_sheet.Cells(row_index, 2).Value2 = row.Number
-            main_sheet.Cells(row_index, 3).Value2 = row.Name
-            main_sheet.Cells(row_index, 4).Value2 = row.LevelName
-            main_sheet.Cells(row_index, 5).Value2 = row.ElementIdText
+            cell = get_excel_cell(main_sheet, row_index, 1)
+            try:
+                com_set(cell, "Value2", row.SpatialType)
+            finally:
+                release_com_object(cell)
+            cell = get_excel_cell(main_sheet, row_index, 2)
+            try:
+                com_set(cell, "Value2", row.Number)
+            finally:
+                release_com_object(cell)
+            cell = get_excel_cell(main_sheet, row_index, 3)
+            try:
+                com_set(cell, "Value2", row.Name)
+            finally:
+                release_com_object(cell)
+            cell = get_excel_cell(main_sheet, row_index, 4)
+            try:
+                com_set(cell, "Value2", row.LevelName)
+            finally:
+                release_com_object(cell)
+            cell = get_excel_cell(main_sheet, row_index, 5)
+            try:
+                com_set(cell, "Value2", row.ElementIdText)
+            finally:
+                release_com_object(cell)
             if row.SelectedFamilyOption is not None:
-                main_sheet.Cells(row_index, 6).Value2 = row.SelectedFamilyOption.DisplayName
+                cell = get_excel_cell(main_sheet, row_index, 6)
+                try:
+                    com_set(cell, "Value2", row.SelectedFamilyOption.DisplayName)
+                finally:
+                    release_com_object(cell)
 
         for list_index, option in enumerate(family_options, start=1):
-            list_sheet.Cells(list_index, 1).Value2 = option.DisplayName
+            cell = get_excel_cell(list_sheet, list_index, 1)
+            try:
+                com_set(cell, "Value2", option.DisplayName)
+            finally:
+                release_com_object(cell)
 
         last_data_row = max(len(rows) + 1, EXCEL_DATA_START_ROW)
         if family_options and rows:
-            family_range = main_sheet.Range[
-                main_sheet.Cells(EXCEL_DATA_START_ROW, 6),
-                main_sheet.Cells(last_data_row, 6)
-            ]
-            family_range.Validation.Delete()
-            family_range.Validation.Add(
-                XL_VALIDATE_LIST,
-                XL_VALID_ALERT_STOP,
-                XL_BETWEEN,
-                "={0}!$A$1:$A${1}".format(EXCEL_LIST_SHEET_NAME, len(family_options))
-            )
-            family_range.Validation.IgnoreBlank = True
-            family_range.Validation.InCellDropdown = True
+            start_cell = get_excel_cell(main_sheet, EXCEL_DATA_START_ROW, 6)
+            end_cell = get_excel_cell(main_sheet, last_data_row, 6)
+            family_range = get_excel_range(main_sheet, start_cell, end_cell)
+            validation = None
+            try:
+                validation = com_get(family_range, "Validation")
+                com_call(validation, "Delete")
+                com_call(
+                    validation,
+                    "Add",
+                    XL_VALIDATE_LIST,
+                    XL_VALID_ALERT_STOP,
+                    XL_BETWEEN,
+                    "={0}!$A$1:$A${1}".format(EXCEL_LIST_SHEET_NAME, len(family_options))
+                )
+                com_set(validation, "IgnoreBlank", True)
+                com_set(validation, "InCellDropdown", True)
+            finally:
+                release_com_object(validation)
+                release_com_object(family_range)
+                release_com_object(end_cell)
+                release_com_object(start_cell)
 
-        header_range = main_sheet.Range[
-            main_sheet.Cells(EXCEL_HEADER_ROW, 1),
-            main_sheet.Cells(EXCEL_HEADER_ROW, len(EXCEL_REQUIRED_HEADERS))
-        ]
-        header_range.Font.Bold = True
-        main_sheet.Range[
-            main_sheet.Cells(EXCEL_HEADER_ROW, 1),
-            main_sheet.Cells(last_data_row, len(EXCEL_REQUIRED_HEADERS))
-        ].Columns.AutoFit()
-        main_sheet.Range[
-            main_sheet.Cells(EXCEL_HEADER_ROW, 1),
-            main_sheet.Cells(last_data_row, len(EXCEL_REQUIRED_HEADERS))
-        ].AutoFilter()
+        start_cell = get_excel_cell(main_sheet, EXCEL_HEADER_ROW, 1)
+        end_cell = get_excel_cell(main_sheet, EXCEL_HEADER_ROW, len(EXCEL_REQUIRED_HEADERS))
+        header_range = get_excel_range(main_sheet, start_cell, end_cell)
+        font = None
+        try:
+            font = com_get(header_range, "Font")
+            com_set(font, "Bold", True)
+        finally:
+            release_com_object(font)
+            release_com_object(header_range)
+            release_com_object(end_cell)
+            release_com_object(start_cell)
 
-        list_sheet.Visible = XL_SHEET_HIDDEN
-        workbook.SaveAs(file_path, EXCEL_OPENXML_WORKBOOK)
+        start_cell = get_excel_cell(main_sheet, EXCEL_HEADER_ROW, 1)
+        end_cell = get_excel_cell(main_sheet, last_data_row, len(EXCEL_REQUIRED_HEADERS))
+        data_range = get_excel_range(main_sheet, start_cell, end_cell)
+        columns = None
+        try:
+            columns = com_get(data_range, "Columns")
+            com_call(columns, "AutoFit")
+            com_call(data_range, "AutoFilter")
+        finally:
+            release_com_object(columns)
+            release_com_object(data_range)
+            release_com_object(end_cell)
+            release_com_object(start_cell)
+
+        com_set(list_sheet, "Visible", XL_SHEET_HIDDEN)
+        com_call(workbook, "SaveAs", file_path, EXCEL_OPENXML_WORKBOOK)
     finally:
         if workbook is not None:
             try:
-                workbook.Close(False)
+                com_call(workbook, "Close", False)
             except Exception:
                 pass
         if excel is not None:
             try:
-                excel.Quit()
+                com_call(excel, "Quit")
             except Exception:
                 pass
 
         release_com_object(list_sheet)
         release_com_object(main_sheet)
+        release_com_object(worksheets)
         release_com_object(workbook)
         release_com_object(workbooks)
         release_com_object(excel)
@@ -1205,15 +1338,22 @@ def read_excel_import_data(file_path):
 
     try:
         excel = get_excel_application()
-        workbooks = excel.Workbooks
-        workbook = workbooks.Open(file_path)
+        workbooks = com_get(excel, "Workbooks")
+        workbook = com_call(workbooks, "Open", file_path)
         main_sheet = get_excel_worksheet(workbook, EXCEL_MAIN_SHEET_NAME)
         if main_sheet is None:
-            main_sheet = workbook.Worksheets(1)
+            worksheets = com_get(workbook, "Worksheets")
+            try:
+                main_sheet = get_excel_collection_item(worksheets, 1)
+            finally:
+                release_com_object(worksheets)
 
         header_map = build_excel_header_map(main_sheet)
-        used_range = main_sheet.UsedRange
-        row_count = used_range.Rows.Count
+        used_range = com_get(main_sheet, "UsedRange")
+        rows = com_get(used_range, "Rows")
+        row_count = get_excel_collection_count(rows)
+        release_com_object(rows)
+        release_com_object(used_range)
 
         imported_family_names = {}
         exported_element_ids = set()
@@ -1222,24 +1362,32 @@ def read_excel_import_data(file_path):
         family_column = header_map["Family Type"]
 
         for row_index in range(EXCEL_DATA_START_ROW, row_count + 1):
-            element_id = normalize_excel_string(main_sheet.Cells(row_index, id_column).Value2)
+            cell = get_excel_cell(main_sheet, row_index, id_column)
+            try:
+                element_id = normalize_excel_string(com_get(cell, "Value2"))
+            finally:
+                release_com_object(cell)
             if not element_id:
                 continue
 
             exported_element_ids.add(element_id)
-            family_name = normalize_excel_string(main_sheet.Cells(row_index, family_column).Value2)
+            cell = get_excel_cell(main_sheet, row_index, family_column)
+            try:
+                family_name = normalize_excel_string(com_get(cell, "Value2"))
+            finally:
+                release_com_object(cell)
             imported_family_names[element_id] = family_name
 
         return imported_family_names, exported_element_ids
     finally:
         if workbook is not None:
             try:
-                workbook.Close(False)
+                com_call(workbook, "Close", False)
             except Exception:
                 pass
         if excel is not None:
             try:
-                excel.Quit()
+                com_call(excel, "Quit")
             except Exception:
                 pass
 
