@@ -18,9 +18,12 @@ clr.AddReference("PresentationCore")
 clr.AddReference("PresentationFramework")
 clr.AddReference("WindowsBase")
 
-from System import Object, Predicate
+from System import Activator, Environment, Object, Predicate, Type
 from System.Collections.ObjectModel import ObservableCollection
+from System.Runtime.InteropServices import Marshal
 from System.Windows.Data import CollectionViewSource
+from System.Windows.Media import Brushes
+from Microsoft.Win32 import OpenFileDialog, SaveFileDialog
 
 from pyrevit import forms
 from pyrevit import revit
@@ -100,6 +103,30 @@ SUPPORTED_PARAMETER_NAMES = {
     "Source Spatial Type": "spatial_type",
 }
 
+EXCEL_MAIN_SHEET_NAME = "RoomsSpaces"
+EXCEL_LIST_SHEET_NAME = "_FamilyTypes"
+EXCEL_HEADER_ROW = 1
+EXCEL_DATA_START_ROW = 2
+EXCEL_REQUIRED_HEADERS = [
+    "Type",
+    "Number",
+    "Name",
+    "Level",
+    "Element Id",
+    "Family Type",
+]
+EXCEL_OPENXML_WORKBOOK = 51
+XL_VALIDATE_LIST = 3
+XL_VALID_ALERT_STOP = 1
+XL_BETWEEN = 1
+XL_SHEET_HIDDEN = 0
+STATUS_BRUSHES = {
+    "info": Brushes.DimGray,
+    "success": Brushes.DarkGreen,
+    "warning": Brushes.DarkGoldenrod,
+    "error": Brushes.DarkRed,
+}
+
 
 # -----------------------------------------------------------------------------
 # Data collection helpers
@@ -138,6 +165,15 @@ class PlacementResult(object):
         self.instance_id = instance_id
         self.error_message = error_message or ""
         self.warning_message = warning_message or ""
+
+
+class ExcelImportResult(object):
+    def __init__(self):
+        self.applied_count = 0
+        self.blank_family_ids = []
+        self.invalid_family_ids = []
+        self.missing_model_ids = []
+        self.new_model_ids = []
 
 
 def get_sorted_levels(document):
@@ -978,6 +1014,312 @@ def parse_offset_value(document, raw_value, axis_label):
 
 
 # -----------------------------------------------------------------------------
+# Excel helpers
+# -----------------------------------------------------------------------------
+
+
+def release_com_object(com_object):
+    if com_object is None:
+        return
+
+    try:
+        Marshal.FinalReleaseComObject(com_object)
+    except Exception:
+        pass
+
+
+def get_excel_application():
+    excel_type = Type.GetTypeFromProgID("Excel.Application")
+    if excel_type is None:
+        raise Exception("Microsoft Excel is not installed.")
+
+    try:
+        excel = Activator.CreateInstance(excel_type)
+    except Exception as excel_error:
+        raise Exception("Could not start Microsoft Excel: {}".format(excel_error))
+
+    excel.Visible = False
+    excel.DisplayAlerts = False
+    return excel
+
+
+def get_desktop_directory():
+    try:
+        return Environment.GetFolderPath(Environment.SpecialFolder.Desktop)
+    except Exception:
+        return ""
+
+
+def pick_excel_save_path():
+    dialog = SaveFileDialog()
+    dialog.Title = "Export Rooms/Spaces to Excel"
+    dialog.Filter = "Excel Workbook (*.xlsx)|*.xlsx"
+    dialog.DefaultExt = ".xlsx"
+    dialog.AddExtension = True
+    dialog.OverwritePrompt = True
+    dialog.InitialDirectory = get_desktop_directory()
+    dialog.FileName = "PlaceInRoomsSpaces.xlsx"
+
+    if dialog.ShowDialog():
+        return dialog.FileName
+    return None
+
+
+def pick_excel_open_path():
+    dialog = OpenFileDialog()
+    dialog.Title = "Import Rooms/Spaces from Excel"
+    dialog.Filter = "Excel Workbook (*.xlsx)|*.xlsx"
+    dialog.DefaultExt = ".xlsx"
+    dialog.CheckFileExists = True
+    dialog.Multiselect = False
+    dialog.InitialDirectory = get_desktop_directory()
+
+    if dialog.ShowDialog():
+        return dialog.FileName
+    return None
+
+
+def get_excel_worksheet(workbook, sheet_name):
+    for worksheet in workbook.Worksheets:
+        if str(worksheet.Name) == sheet_name:
+            return worksheet
+    return None
+
+
+def normalize_excel_string(value):
+    if value is None:
+        return ""
+
+    text = str(value).strip()
+    if text.endswith(".0"):
+        integer_text = text[:-2]
+        if integer_text and integer_text.lstrip("-").isdigit():
+            return integer_text
+    return text
+
+
+def build_excel_header_map(worksheet):
+    header_map = {}
+
+    used_range = worksheet.UsedRange
+    column_count = used_range.Columns.Count
+    for column_index in range(1, column_count + 1):
+        header_text = normalize_excel_string(worksheet.Cells(EXCEL_HEADER_ROW, column_index).Value2)
+        if header_text:
+            header_map[header_text] = column_index
+
+    missing_headers = [header for header in EXCEL_REQUIRED_HEADERS if header not in header_map]
+    if missing_headers:
+        raise Exception("Excel file is missing required columns: {}".format(", ".join(missing_headers)))
+
+    return header_map
+
+
+def export_rows_to_excel(rows, family_options, file_path):
+    excel = None
+    workbooks = None
+    workbook = None
+    main_sheet = None
+    list_sheet = None
+
+    try:
+        excel = get_excel_application()
+        workbooks = excel.Workbooks
+        workbook = workbooks.Add()
+        main_sheet = workbook.Worksheets(1)
+        main_sheet.Name = EXCEL_MAIN_SHEET_NAME
+        list_sheet = workbook.Worksheets.Add()
+        list_sheet.Name = EXCEL_LIST_SHEET_NAME
+
+        for column_index, header in enumerate(EXCEL_REQUIRED_HEADERS, start=1):
+            main_sheet.Cells(EXCEL_HEADER_ROW, column_index).Value2 = header
+
+        for row_index, row in enumerate(rows, start=EXCEL_DATA_START_ROW):
+            main_sheet.Cells(row_index, 1).Value2 = row.SpatialType
+            main_sheet.Cells(row_index, 2).Value2 = row.Number
+            main_sheet.Cells(row_index, 3).Value2 = row.Name
+            main_sheet.Cells(row_index, 4).Value2 = row.LevelName
+            main_sheet.Cells(row_index, 5).Value2 = row.ElementIdText
+            if row.SelectedFamilyOption is not None:
+                main_sheet.Cells(row_index, 6).Value2 = row.SelectedFamilyOption.DisplayName
+
+        for list_index, option in enumerate(family_options, start=1):
+            list_sheet.Cells(list_index, 1).Value2 = option.DisplayName
+
+        last_data_row = max(len(rows) + 1, EXCEL_DATA_START_ROW)
+        if family_options and rows:
+            family_range = main_sheet.Range[
+                main_sheet.Cells(EXCEL_DATA_START_ROW, 6),
+                main_sheet.Cells(last_data_row, 6)
+            ]
+            family_range.Validation.Delete()
+            family_range.Validation.Add(
+                XL_VALIDATE_LIST,
+                XL_VALID_ALERT_STOP,
+                XL_BETWEEN,
+                "={0}!$A$1:$A${1}".format(EXCEL_LIST_SHEET_NAME, len(family_options))
+            )
+            family_range.Validation.IgnoreBlank = True
+            family_range.Validation.InCellDropdown = True
+
+        header_range = main_sheet.Range[
+            main_sheet.Cells(EXCEL_HEADER_ROW, 1),
+            main_sheet.Cells(EXCEL_HEADER_ROW, len(EXCEL_REQUIRED_HEADERS))
+        ]
+        header_range.Font.Bold = True
+        main_sheet.Range[
+            main_sheet.Cells(EXCEL_HEADER_ROW, 1),
+            main_sheet.Cells(last_data_row, len(EXCEL_REQUIRED_HEADERS))
+        ].Columns.AutoFit()
+        main_sheet.Range[
+            main_sheet.Cells(EXCEL_HEADER_ROW, 1),
+            main_sheet.Cells(last_data_row, len(EXCEL_REQUIRED_HEADERS))
+        ].AutoFilter()
+
+        list_sheet.Visible = XL_SHEET_HIDDEN
+        workbook.SaveAs(file_path, EXCEL_OPENXML_WORKBOOK)
+    finally:
+        if workbook is not None:
+            try:
+                workbook.Close(False)
+            except Exception:
+                pass
+        if excel is not None:
+            try:
+                excel.Quit()
+            except Exception:
+                pass
+
+        release_com_object(list_sheet)
+        release_com_object(main_sheet)
+        release_com_object(workbook)
+        release_com_object(workbooks)
+        release_com_object(excel)
+
+
+def read_excel_import_data(file_path):
+    excel = None
+    workbooks = None
+    workbook = None
+    main_sheet = None
+
+    try:
+        excel = get_excel_application()
+        workbooks = excel.Workbooks
+        workbook = workbooks.Open(file_path)
+        main_sheet = get_excel_worksheet(workbook, EXCEL_MAIN_SHEET_NAME)
+        if main_sheet is None:
+            main_sheet = workbook.Worksheets(1)
+
+        header_map = build_excel_header_map(main_sheet)
+        used_range = main_sheet.UsedRange
+        row_count = used_range.Rows.Count
+
+        imported_family_names = {}
+        exported_element_ids = set()
+
+        id_column = header_map["Element Id"]
+        family_column = header_map["Family Type"]
+
+        for row_index in range(EXCEL_DATA_START_ROW, row_count + 1):
+            element_id = normalize_excel_string(main_sheet.Cells(row_index, id_column).Value2)
+            if not element_id:
+                continue
+
+            exported_element_ids.add(element_id)
+            family_name = normalize_excel_string(main_sheet.Cells(row_index, family_column).Value2)
+            imported_family_names[element_id] = family_name
+
+        return imported_family_names, exported_element_ids
+    finally:
+        if workbook is not None:
+            try:
+                workbook.Close(False)
+            except Exception:
+                pass
+        if excel is not None:
+            try:
+                excel.Quit()
+            except Exception:
+                pass
+
+        release_com_object(main_sheet)
+        release_com_object(workbook)
+        release_com_object(workbooks)
+        release_com_object(excel)
+
+
+def build_id_sample_text(ids_list, max_count=5):
+    if not ids_list:
+        return ""
+
+    sorted_ids = sorted(
+        [str(item) for item in ids_list],
+        key=lambda value: (0, int(value)) if value.lstrip("-").isdigit() else (1, value)
+    )
+    sample_ids = sorted_ids[:max_count]
+    suffix = ""
+    if len(sorted_ids) > max_count:
+        suffix = " ..."
+    return ", ".join(sample_ids) + suffix
+
+
+def build_import_status_message(import_result, file_path):
+    status_parts = []
+    severity = "success"
+
+    status_parts.append(
+        "Imported {} assignment{} from {}.".format(
+            import_result.applied_count,
+            "" if import_result.applied_count == 1 else "s",
+            os.path.basename(file_path)
+        )
+    )
+
+    if import_result.blank_family_ids:
+        severity = "warning"
+        status_parts.append(
+            "Blank family on {} id{} ({})".format(
+                len(import_result.blank_family_ids),
+                "" if len(import_result.blank_family_ids) == 1 else "s",
+                build_id_sample_text(import_result.blank_family_ids)
+            )
+        )
+
+    if import_result.invalid_family_ids:
+        severity = "warning"
+        status_parts.append(
+            "Unknown family on {} id{} ({})".format(
+                len(import_result.invalid_family_ids),
+                "" if len(import_result.invalid_family_ids) == 1 else "s",
+                build_id_sample_text(import_result.invalid_family_ids)
+            )
+        )
+
+    if import_result.missing_model_ids:
+        severity = "warning"
+        status_parts.append(
+            "Missing from model: {} id{} ({})".format(
+                len(import_result.missing_model_ids),
+                "" if len(import_result.missing_model_ids) == 1 else "s",
+                build_id_sample_text(import_result.missing_model_ids)
+            )
+        )
+
+    if import_result.new_model_ids:
+        severity = "warning"
+        status_parts.append(
+            "New in model since export: {} id{} ({})".format(
+                len(import_result.new_model_ids),
+                "" if len(import_result.new_model_ids) == 1 else "s",
+                build_id_sample_text(import_result.new_model_ids)
+            )
+        )
+
+    return " | ".join(status_parts), severity
+
+
+# -----------------------------------------------------------------------------
 # WPF window class
 # -----------------------------------------------------------------------------
 
@@ -987,13 +1329,17 @@ class PlaceInRoomsSpacesWindow(forms.WPFWindow):
         forms.WPFWindow.__init__(self, xaml_file)
 
         self._all_rows = rows
+        self._rows_by_id = {row.ElementIdText: row for row in rows}
         self._rows = ObservableCollection[Object]()
         for row in rows:
             self._rows.Add(row)
 
+        self._family_option_items = list(family_options)
+        self._family_option_by_name = {}
         self._family_options = ObservableCollection[Object]()
         for option in family_options:
             self._family_options.Add(option)
+            self._family_option_by_name[option.DisplayName] = option
 
         for row in rows:
             row.FamilyOptions = self._family_options
@@ -1014,12 +1360,15 @@ class PlaceInRoomsSpacesWindow(forms.WPFWindow):
         self.mode_rooms_rb.Checked += self.on_filters_changed
         self.mode_spaces_rb.Checked += self.on_filters_changed
         self.mode_both_rb.Checked += self.on_filters_changed
+        self.export_excel_btn.Click += self.on_export_excel
+        self.import_excel_btn.Click += self.on_import_excel
         self.assign_family_btn.Click += self.on_assign_family_to_selected_rows
         self.check_all_btn.Click += self.on_check_all
         self.uncheck_all_btn.Click += self.on_uncheck_all
         self.apply_btn.Click += self.on_apply
         self.cancel_btn.Click += self.on_cancel
 
+        self.set_status("Ready.", "info")
         self._view.Refresh()
 
     def _filter_row(self, item):
@@ -1053,6 +1402,78 @@ class PlaceInRoomsSpacesWindow(forms.WPFWindow):
         if self._view is not None:
             self._view.Refresh()
             self.spatial_grid.Items.Refresh()
+
+    def set_status(self, text, severity="info"):
+        self.status_tb.Text = text or ""
+        self.status_tb.Foreground = STATUS_BRUSHES.get(severity, STATUS_BRUSHES["info"])
+
+    def apply_imported_selections(self, imported_family_names, exported_element_ids):
+        result = ExcelImportResult()
+        current_element_ids = set(self._rows_by_id.keys())
+
+        for element_id in sorted(exported_element_ids):
+            if element_id not in current_element_ids:
+                result.missing_model_ids.append(element_id)
+
+        result.new_model_ids = sorted(list(current_element_ids - exported_element_ids))
+
+        for element_id, family_name in imported_family_names.items():
+            row = self._rows_by_id.get(element_id)
+            if row is None:
+                continue
+
+            if not family_name:
+                result.blank_family_ids.append(element_id)
+                continue
+
+            option = self._family_option_by_name.get(family_name)
+            if option is None:
+                result.invalid_family_ids.append(element_id)
+                continue
+
+            row.SelectedFamilyOption = option
+            row.IsSelected = True
+            result.applied_count += 1
+
+        return result
+
+    def on_export_excel(self, sender, args):
+        file_path = pick_excel_save_path()
+        if not file_path:
+            self.set_status("Excel export canceled.", "info")
+            return
+
+        try:
+            export_rows_to_excel(self._all_rows, self._family_option_items, file_path)
+            self.set_status(
+                "Exported {} rows to {}.".format(len(self._all_rows), os.path.basename(file_path)),
+                "success"
+            )
+        except Exception as export_error:
+            self.set_status("Excel export failed.", "error")
+            forms.alert(
+                "Excel export failed:\n\n{}".format(export_error),
+                warn_icon=True
+            )
+
+    def on_import_excel(self, sender, args):
+        file_path = pick_excel_open_path()
+        if not file_path:
+            self.set_status("Excel import canceled.", "info")
+            return
+
+        try:
+            imported_family_names, exported_element_ids = read_excel_import_data(file_path)
+            import_result = self.apply_imported_selections(imported_family_names, exported_element_ids)
+            status_message, severity = build_import_status_message(import_result, file_path)
+            self.set_status(status_message, severity)
+            self.spatial_grid.Items.Refresh()
+        except Exception as import_error:
+            self.set_status("Excel import failed.", "error")
+            forms.alert(
+                "Excel import failed:\n\n{}".format(import_error),
+                warn_icon=True
+            )
 
     def on_check_all(self, sender, args):
         for item in self._view:

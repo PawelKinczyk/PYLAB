@@ -239,19 +239,50 @@
             </DataGrid>
         </Border>
 
-        <StackPanel Grid.Row="3"
-                    Orientation="Horizontal"
-                    HorizontalAlignment="Right"
-                    Margin="0,12,0,0">
-            <Button x:Name="apply_btn"
-                    Width="95"
-                    Height="32"
-                    Margin="0,0,8,0"
-                    Content="Apply" />
-            <Button x:Name="cancel_btn"
-                    Width="95"
-                    Height="32"
-                    Content="Cancel" />
-        </StackPanel>
+        <Grid Grid.Row="3"
+              Margin="0,12,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="16" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <Border Grid.Column="0"
+                    Padding="10,8"
+                    Background="#FFF2F5F7"
+                    BorderBrush="#FFD2D2D2"
+                    BorderThickness="1"
+                    CornerRadius="4">
+                <TextBlock x:Name="status_tb"
+                           Foreground="#FF555555"
+                           Text="Ready."
+                           TextWrapping="Wrap"
+                           VerticalAlignment="Center" />
+            </Border>
+
+            <StackPanel Grid.Column="2"
+                        Orientation="Horizontal"
+                        HorizontalAlignment="Right">
+                <Button x:Name="export_excel_btn"
+                        Width="110"
+                        Height="32"
+                        Margin="0,0,8,0"
+                        Content="Export Excel" />
+                <Button x:Name="import_excel_btn"
+                        Width="110"
+                        Height="32"
+                        Margin="0,0,8,0"
+                        Content="Import Excel" />
+                <Button x:Name="apply_btn"
+                        Width="95"
+                        Height="32"
+                        Margin="0,0,8,0"
+                        Content="Apply" />
+                <Button x:Name="cancel_btn"
+                        Width="95"
+                        Height="32"
+                        Content="Cancel" />
+            </StackPanel>
+        </Grid>
     </Grid>
 </Window>
