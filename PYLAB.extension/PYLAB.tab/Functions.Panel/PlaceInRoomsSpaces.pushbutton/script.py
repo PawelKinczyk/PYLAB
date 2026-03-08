@@ -9,6 +9,7 @@ Assumptions:
 
 import os
 import math
+import re
 import clr
 
 clr.AddReference("System")
@@ -903,24 +904,60 @@ def convert_length_to_internal(document, value):
     raise Exception("Could not determine project length units for offset conversion.")
 
 
+def format_length_unit_name(unit_value):
+    if unit_value is None:
+        return ""
+
+    raw_value = getattr(unit_value, "TypeId", None) or str(unit_value)
+    if not raw_value:
+        return ""
+
+    normalized = raw_value.strip()
+    if ":" in normalized:
+        normalized = normalized.split(":", 1)[1]
+    if "-" in normalized:
+        normalized = normalized.split("-", 1)[0]
+    if normalized.startswith("DUT_"):
+        normalized = normalized[4:]
+
+    normalized = normalized.replace("_", " ")
+    normalized = re.sub(r"([a-z])([A-Z])", r"\1 \2", normalized)
+    normalized = normalized.strip().lower()
+
+    unit_name_overrides = {
+        "millimeter": "millimeters",
+        "centimeter": "centimeters",
+        "meter": "meters",
+        "decimeter": "decimeters",
+        "foot": "feet",
+        "inch": "inches",
+    }
+
+    return unit_name_overrides.get(normalized, normalized)
+
+
 def get_project_length_units_label(document):
     units = document.GetUnits()
 
     if SPEC_TYPE_ID is not None:
         try:
             unit_type_id = units.GetFormatOptions(SPEC_TYPE_ID.Length).GetUnitTypeId()
-            return "Project length units ({})".format(unit_type_id.TypeId)
+            unit_name = format_length_unit_name(unit_type_id)
+            if unit_name:
+                return "Project length unit: {}".format(unit_name)
         except Exception:
             pass
 
     if UNIT_TYPE is not None:
         try:
             display_units = units.GetFormatOptions(UNIT_TYPE.UT_Length).DisplayUnits
-            return "Project length units ({})".format(display_units)
+            unit_name = format_length_unit_name(display_units)
+            if unit_name:
+                return "Project length unit: {}".format(unit_name)
         except Exception:
             pass
 
-    return "Project length units"
+    return "Project length unit"
 
 
 def parse_offset_value(document, raw_value, axis_label):
