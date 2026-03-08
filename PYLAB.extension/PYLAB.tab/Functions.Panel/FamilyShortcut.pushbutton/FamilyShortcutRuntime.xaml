@@ -1,0 +1,62 @@
+<Window
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Title="FamilyShortcut"
+    Height="210"
+    Width="420"
+    MinHeight="210"
+    MinWidth="420"
+    WindowStartupLocation="CenterScreen"
+    ResizeMode="NoResize"
+    Topmost="True"
+    Background="#FFF6F6F6">
+    <Grid Margin="14">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0"
+                   FontSize="18"
+                   FontWeight="SemiBold"
+                   Text="FamilyShortcut" />
+
+        <TextBlock Grid.Row="1"
+                   Margin="0,8,0,0"
+                   Foreground="#FF555555"
+                   TextWrapping="Wrap"
+                   Text="Type a configured 2-letter shortcut. After resolution, Revit takes over with its standard placement workflow." />
+
+        <TextBox x:Name="input_tb"
+                 Grid.Row="2"
+                 Margin="0,16,0,0"
+                 Height="42"
+                 FontSize="24"
+                 FontWeight="Bold"
+                 MaxLength="2"
+                 CharacterCasing="Upper"
+                 VerticalContentAlignment="Center"
+                 HorizontalContentAlignment="Center" />
+
+        <Border Grid.Row="3"
+                Margin="0,14,0,0"
+                Padding="10,8"
+                Background="White"
+                BorderBrush="#FFD2D2D2"
+                BorderThickness="1"
+                CornerRadius="4">
+            <StackPanel>
+                <TextBlock x:Name="status_tb"
+                           FontWeight="SemiBold"
+                           Text="Ready." />
+                <TextBlock x:Name="details_tb"
+                           Margin="0,4,0,0"
+                           Foreground="#FF555555"
+                           TextWrapping="Wrap"
+                           Text="" />
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>
