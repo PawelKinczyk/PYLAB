@@ -28,6 +28,7 @@ from Autodesk.Revit import DB
 
 from Autodesk.Revit.DB import (
     BuiltInCategory,
+    BuiltInParameter,
     CategoryType,
     ElementId,
     ElementTransformUtils,
@@ -306,9 +307,39 @@ def get_family_name(symbol):
 
 def get_symbol_name(symbol):
     try:
-        return symbol.Name
+        name = symbol.Name
+        if name:
+            return name
     except Exception:
-        return "<Unknown Type>"
+        pass
+
+    for parameter_id in [
+        BuiltInParameter.SYMBOL_NAME_PARAM,
+        BuiltInParameter.ALL_MODEL_TYPE_NAME,
+    ]:
+        try:
+            parameter = symbol.get_Parameter(parameter_id)
+            if parameter is None:
+                continue
+
+            value = parameter.AsString()
+            if value:
+                return value
+
+            value = parameter.AsValueString()
+            if value:
+                return value
+        except Exception:
+            continue
+
+    try:
+        name = DB.Element.Name.GetValue(symbol)
+        if name:
+            return name
+    except Exception:
+        pass
+
+    return "<Unknown Type>"
 
 
 def get_symbol_category_id(symbol):
