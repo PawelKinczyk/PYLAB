@@ -50,6 +50,7 @@ Additional documentation:
 - [Update](docs/update.md)
 - [Migration](docs/migration.md)
 - [Add-on Authoring](docs/addon-authoring.md)
+- [Button Guide](docs/button-guide.md)
 
 ## Update
 If PYLAB was installed through pyRevit extension registration:
