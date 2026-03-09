@@ -1,26 +1,13 @@
+title: General
 layout:
   - LinkedElemID
-  - -----
+  - CopyParameter
+  - ActiveWorkset
+  - CopyFilters
+  - SpaceSearch
+  - FamilyShortcut
+  - PlaceInRoomsSpaces
+  - MeasureElem
   - Element3DFocus
   - SectionReset
-  - -----
-  - AddIns
-  - -----
-  - CopyParameter
-  - -----
-  - ActiveWorkset
-  - -----
-  - CopyFilters
-  - -----
-  - SpaceSearch
-  - -----
-  - FamilyShortcut
-  - -----
-  - PlaceInRoomsSpaces
-  - -----
-  - BatchChangeType
-  - -----
-  - MeasureElem
-  - -----
-  - PipeDuctOffset
 
