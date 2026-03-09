@@ -5,6 +5,9 @@ This guide explains what each PYLAB button is for, how it can improve productivi
 ## Information Panel
 
 ### About Author
+**Icon**
+<img src="../PYLAB.extension/PYLAB.tab/Info.Panel/Tool.urlbutton/icon.png" alt="About Author icon" width="48" />
+
 **Purpose and productivity**
 Opens the author website. It is useful when you want to learn more about the extension source or contact the author outside GitHub.
 
@@ -18,6 +21,10 @@ This is a URL button. It does not modify the Revit model.
 No user settings.
 
 ### Report Bug
+**Icon**
+<img src="../PYLAB.extension/PYLAB.tab/Info.Panel/ReportBug.urlbutton/icon.light.png" alt="Report Bug light icon" width="48" />
+<img src="../PYLAB.extension/PYLAB.tab/Info.Panel/ReportBug.urlbutton/icon.dark.png" alt="Report Bug dark icon" width="48" />
+
 **Purpose and productivity**
 Opens the GitHub bug report form so issues can be reported quickly with the correct template.
 
@@ -31,6 +38,10 @@ This is a URL button that opens the repository bug-report template.
 No user settings.
 
 ### Feature Idea
+**Icon**
+<img src="../PYLAB.extension/PYLAB.tab/Info.Panel/FeatureIdea.urlbutton/icon.light.png" alt="Feature Idea light icon" width="48" />
+<img src="../PYLAB.extension/PYLAB.tab/Info.Panel/FeatureIdea.urlbutton/icon.dark.png" alt="Feature Idea dark icon" width="48" />
+
 **Purpose and productivity**
 Opens the GitHub feature request form so you can send improvement ideas without searching for the repository manually.
 
@@ -46,6 +57,10 @@ No user settings.
 ## General Panel
 
 ### Active Workset
+**Icon**
+<img src="../PYLAB.extension/PYLAB.tab/Functions.Panel/ActiveWorkset.pushbutton/icon.light.png" alt="Active Workset light icon" width="48" />
+<img src="../PYLAB.extension/PYLAB.tab/Functions.Panel/ActiveWorkset.pushbutton/icon.dark.png" alt="Active Workset dark icon" width="48" />
+
 **Purpose and productivity**
 Sets the active workset to match a picked element. This saves time when you are editing elements from different worksets and want the correct workset active before creating new content.
 
@@ -61,6 +76,10 @@ Reads the selected element's `WorksetId` and updates the active workset through 
 No user settings.
 
 ### Copy Filter
+**Icon**
+<img src="../PYLAB.extension/PYLAB.tab/Functions.Panel/CopyFilters.pushbutton/icon.light.png" alt="Copy Filter light icon" width="48" />
+<img src="../PYLAB.extension/PYLAB.tab/Functions.Panel/CopyFilters.pushbutton/icon.dark.png" alt="Copy Filter dark icon" width="48" />
+
 **Purpose and productivity**
 Copies filter overrides from the active view to selected view templates. This speeds up view setup and keeps graphics consistent across templates.
 
@@ -78,6 +97,10 @@ Reads the selected filters and their override settings from the active view, the
 No persistent settings.
 
 ### Copy Parameters
+**Icon**
+<img src="../PYLAB.extension/PYLAB.tab/Functions.Panel/CopyParameter.pushbutton/icon.light.png" alt="Copy Parameters light icon" width="48" />
+<img src="../PYLAB.extension/PYLAB.tab/Functions.Panel/CopyParameter.pushbutton/icon.dark.png" alt="Copy Parameters dark icon" width="48" />
+
 **Purpose and productivity**
 Copies one parameter value into another parameter for all instances of the same family and type as a picked element. This is useful when standardizing data or filling shared parameters in bulk.
 
@@ -95,6 +118,10 @@ The command finds all instances with the same `Family and Type` as the picked el
 No persistent settings.
 
 ### Element IDs
+**Icon**
+<img src="../PYLAB.extension/PYLAB.tab/Functions.Panel/LinkedElemID.pushbutton/icon.light.png" alt="Element IDs light icon" width="48" />
+<img src="../PYLAB.extension/PYLAB.tab/Functions.Panel/LinkedElemID.pushbutton/icon.dark.png" alt="Element IDs dark icon" width="48" />
+
 **Purpose and productivity**
 Reports IDs for both current-model elements and linked-model elements. This helps when coordinating issues, creating filters, or locating linked content.
 
@@ -111,6 +138,10 @@ Prints model element IDs and linked element IDs together with the `Family and Ty
 No user settings.
 
 ### Element 3D Focus
+**Icon**
+<img src="../PYLAB.extension/PYLAB.tab/Functions.Panel/Element3DFocus.pushbutton/icon.light.png" alt="Element 3D Focus light icon" width="48" />
+<img src="../PYLAB.extension/PYLAB.tab/Functions.Panel/Element3DFocus.pushbutton/icon.dark.png" alt="Element 3D Focus dark icon" width="48" />
+
 **Purpose and productivity**
 Opens or reuses a 3D view, zooms to an element by ID, and creates a section box around it. This is useful when QA checking element locations, troubleshooting clashes, or reviewing issue tracker IDs.
 
@@ -129,6 +160,10 @@ Use **Shift-click** on the button to open settings:
 - Optional temporary isolate in the 3D view
 
 ### Family Shortcut
+**Icon**
+<img src="../PYLAB.extension/PYLAB.tab/Functions.Panel/FamilyShortcut.pushbutton/icon.light.png" alt="Family Shortcut light icon" width="48" />
+<img src="../PYLAB.extension/PYLAB.tab/Functions.Panel/FamilyShortcut.pushbutton/icon.dark.png" alt="Family Shortcut dark icon" width="48" />
+
 **Purpose and productivity**
 Lets you launch native Revit family placement by typing a 2-letter shortcut instead of searching through the ribbon or Type Selector. This is especially useful for repetitive placement of a small set of commonly used families.
 
@@ -151,6 +186,10 @@ Use **Shift-click** to open the shortcut manager:
 Shortcuts must contain exactly 2 letters, and enabled shortcuts must be unique.
 
 ### Measure Elem
+**Icon**
+<img src="../PYLAB.extension/PYLAB.tab/Functions.Panel/MeasureElem.pushbutton/icon.light.png" alt="Measure Elem light icon" width="48" />
+<img src="../PYLAB.extension/PYLAB.tab/Functions.Panel/MeasureElem.pushbutton/icon.dark.png" alt="Measure Elem dark icon" width="48" />
+
 **Purpose and productivity**
 Measures the total length of selected pipes, ducts, or walls and groups the result by type and size. It is useful for quick quantity checks without building a schedule.
 
@@ -168,6 +207,10 @@ The command reads element lengths, converts them to meters, groups them by type 
 No user settings.
 
 ### Place in Rooms/Spaces
+**Icon**
+<img src="../PYLAB.extension/PYLAB.tab/Functions.Panel/PlaceInRoomsSpaces.pushbutton/icon.light.png" alt="Place in Rooms Spaces light icon" width="48" />
+<img src="../PYLAB.extension/PYLAB.tab/Functions.Panel/PlaceInRoomsSpaces.pushbutton/icon.dark.png" alt="Place in Rooms Spaces dark icon" width="48" />
+
 **Purpose and productivity**
 Places one non-hosted model family instance into multiple rooms and/or MEP spaces in one run. This is useful for placing repeated content such as markers, equipment placeholders, or coordination families across many spaces.
 
@@ -199,6 +242,10 @@ No Shift-click settings, but the window provides working options:
 - Excel export and import support for family assignment workflows
 
 ### SectionReset
+**Icon**
+<img src="../PYLAB.extension/PYLAB.tab/Functions.Panel/SectionReset.pushbutton/icon.light.png" alt="SectionReset light icon" width="48" />
+<img src="../PYLAB.extension/PYLAB.tab/Functions.Panel/SectionReset.pushbutton/icon.dark.png" alt="SectionReset dark icon" width="48" />
+
 **Purpose and productivity**
 Resets a rotated 3D section box back to project axes or rotates it in fixed increments. This helps when a working 3D view becomes hard to control after repeated rotations.
 
@@ -215,6 +262,10 @@ For reset, it rebuilds the section box as a world-aligned box around the current
 No persistent settings.
 
 ### Space Search
+**Icon**
+<img src="../PYLAB.extension/PYLAB.tab/Functions.Panel/SpaceSearch.pushbutton/icon.light.png" alt="Space Search light icon" width="48" />
+<img src="../PYLAB.extension/PYLAB.tab/Functions.Panel/SpaceSearch.pushbutton/icon.dark.png" alt="Space Search dark icon" width="48" />
+
 **Purpose and productivity**
 Finds an MEP space by number and selects it in the model. This is useful for quick coordination or checking data tied to a specific space.
 
@@ -232,6 +283,10 @@ No user settings.
 ## MEP Panel
 
 ### Add Insulation
+**Icon**
+<img src="../PYLAB.extension/PYLAB.tab/MEPHelp.Panel/AddIns.pushbutton/icon.light.png" alt="Add Insulation light icon" width="48" />
+<img src="../PYLAB.extension/PYLAB.tab/MEPHelp.Panel/AddIns.pushbutton/icon.dark.png" alt="Add Insulation dark icon" width="48" />
+
 **Purpose and productivity**
 Applies pipe insulation to multiple selected pipes and pipe fittings in one workflow. This is faster than assigning insulation element by element.
 
@@ -249,6 +304,10 @@ The tool groups the selected elements by family/type and size, asks for thicknes
 No persistent settings. Thickness is entered each run.
 
 ### Batch Change Pipe Type
+**Icon**
+<img src="../PYLAB.extension/PYLAB.tab/MEPHelp.Panel/BatchChangeType.pushbutton/icon.light.png" alt="Batch Change Pipe Type light icon" width="48" />
+<img src="../PYLAB.extension/PYLAB.tab/MEPHelp.Panel/BatchChangeType.pushbutton/icon.dark.png" alt="Batch Change Pipe Type dark icon" width="48" />
+
 **Purpose and productivity**
 Changes many pipes and compatible pipe fittings to a selected pipe type in one run. This is useful when redesigning a system and wanting fittings to follow the target routing preferences where possible.
 
@@ -266,6 +325,10 @@ The tool changes pipe instances directly to the selected type. For fittings, it 
 No user settings.
 
 ### Bypass
+**Icon**
+<img src="../PYLAB.extension/PYLAB.tab/MEPHelp.Panel/Bypass.pushbutton/icon.light.png" alt="Bypass light icon" width="48" />
+<img src="../PYLAB.extension/PYLAB.tab/MEPHelp.Panel/Bypass.pushbutton/icon.dark.png" alt="Bypass dark icon" width="48" />
+
 **Purpose and productivity**
 This button appears to be an unfinished or placeholder workflow for wall-related linked-model selection. It is not currently a full bypass creation tool in the checked-in script.
 
@@ -279,6 +342,10 @@ It validates linked-model wall picks. It does not currently create geometry or c
 No user settings.
 
 ### Pipe/duct Offset
+**Icon**
+<img src="../PYLAB.extension/PYLAB.tab/MEPHelp.Panel/PipeDuctOffset.pushbutton/icon.light.png" alt="Pipe duct Offset light icon" width="48" />
+<img src="../PYLAB.extension/PYLAB.tab/MEPHelp.Panel/PipeDuctOffset.pushbutton/icon.dark.png" alt="Pipe duct Offset dark icon" width="48" />
+
 **Purpose and productivity**
 Moves one parallel pipe or duct so the edge-to-edge horizontal offset from another pipe or duct matches a saved target value. This is useful for standardizing spacing in coordination and production work.
 
@@ -297,6 +364,10 @@ Use **Shift-click** to open settings:
 - Whether insulation thickness is included in the spacing calculation
 
 ### Parallel Pipe Connect
+**Icon**
+<img src="../PYLAB.extension/PYLAB.tab/MEPHelp.Panel/PipeConnect.pushbutton/icon.light.png" alt="Parallel Pipe Connect light icon" width="48" />
+<img src="../PYLAB.extension/PYLAB.tab/MEPHelp.Panel/PipeConnect.pushbutton/icon.dark.png" alt="Parallel Pipe Connect dark icon" width="48" />
+
 **Purpose and productivity**
 Creates a new pipe between two selected pipes and connects them with elbow fittings. This speeds up simple bridge connections between parallel pipes.
 
@@ -312,6 +383,10 @@ It collects unconnected pipe connectors, finds the closest pair, creates a new p
 No persistent settings.
 
 ### Air Terminal Calculator Settings
+**Icon**
+<img src="../PYLAB.extension/PYLAB.tab/MEPHelp.Panel/AirTerminalCalculator.pulldown/Air_terminal_calc_setting.pushbutton/icon.light.png" alt="Air Terminal Calculator Settings light icon" width="48" />
+<img src="../PYLAB.extension/PYLAB.tab/MEPHelp.Panel/AirTerminalCalculator.pulldown/Air_terminal_calc_setting.pushbutton/icon.dark.png" alt="Air Terminal Calculator Settings dark icon" width="48" />
+
 **Purpose and productivity**
 Maintains the lookup tables used by the air terminal calculator commands. This lets you adapt the recommended family/type choices to your own product library.
 
@@ -333,6 +408,10 @@ This button is itself the settings editor. It updates:
 - `air_terminals_return_settings.json`
 
 ### Air Terminal Calculator (Supply)
+**Icon**
+<img src="../PYLAB.extension/PYLAB.tab/MEPHelp.Panel/AirTerminalCalculator.pulldown/Air_terminal_calc_supply.pushbutton/icon.light.png" alt="Air Terminal Calculator Supply light icon" width="48" />
+<img src="../PYLAB.extension/PYLAB.tab/MEPHelp.Panel/AirTerminalCalculator.pulldown/Air_terminal_calc_supply.pushbutton/icon.dark.png" alt="Air Terminal Calculator Supply dark icon" width="48" />
+
 **Purpose and productivity**
 Suggests and applies a suitable supply air terminal type for selected air terminals based on entered air flow and the configured lookup table.
 
@@ -350,6 +429,10 @@ It loads the supply settings JSON, filters configured options by the entered flo
 Use `Air terminal calculator settings` to edit available records.
 
 ### Air Terminal Calculator (Return)
+**Icon**
+<img src="../PYLAB.extension/PYLAB.tab/MEPHelp.Panel/AirTerminalCalculator.pulldown/Air_terminal_calc_return.pushbutton/icon.light.png" alt="Air Terminal Calculator Return light icon" width="48" />
+<img src="../PYLAB.extension/PYLAB.tab/MEPHelp.Panel/AirTerminalCalculator.pulldown/Air_terminal_calc_return.pushbutton/icon.dark.png" alt="Air Terminal Calculator Return dark icon" width="48" />
+
 **Purpose and productivity**
 Works like the supply calculator, but for return air terminals. It speeds up terminal selection when sizing return devices from airflow requirements.
 
@@ -369,6 +452,10 @@ Use `Air terminal calculator settings` to edit available records.
 ## AECVision Integration Panel
 
 ### Walls from AECVision
+**Icon**
+<img src="../PYLAB.extension/PYLAB.tab/AECVisionIntegration.Panel/WallsFromAECVision.pushbutton/icon.light.png" alt="Walls from AECVision light icon" width="48" />
+<img src="../PYLAB.extension/PYLAB.tab/AECVisionIntegration.Panel/WallsFromAECVision.pushbutton/icon.dark.png" alt="Walls from AECVision dark icon" width="48" />
+
 **Purpose and productivity**
 Creates Revit walls from a CSV exported by AECVision. This can accelerate early model creation from image-based wall detection or external preprocessing.
 
