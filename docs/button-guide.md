@@ -5,7 +5,6 @@ This guide explains what each PYLAB button is for, how it can improve productivi
 ## Information Panel
 
 ### About Author
-**Icon**
 <img src="../PYLAB.extension/PYLAB.tab/Info.Panel/Tool.urlbutton/icon.png" alt="About Author icon" width="48" />
 
 **Purpose and productivity**
@@ -21,8 +20,6 @@ This is a URL button. It does not modify the Revit model.
 No user settings.
 
 ### Report Bug
-**Icon**
-<img src="../PYLAB.extension/PYLAB.tab/Info.Panel/ReportBug.urlbutton/icon.light.png" alt="Report Bug light icon" width="48" />
 <img src="../PYLAB.extension/PYLAB.tab/Info.Panel/ReportBug.urlbutton/icon.dark.png" alt="Report Bug dark icon" width="48" />
 
 **Purpose and productivity**
@@ -38,8 +35,6 @@ This is a URL button that opens the repository bug-report template.
 No user settings.
 
 ### Feature Idea
-**Icon**
-<img src="../PYLAB.extension/PYLAB.tab/Info.Panel/FeatureIdea.urlbutton/icon.light.png" alt="Feature Idea light icon" width="48" />
 <img src="../PYLAB.extension/PYLAB.tab/Info.Panel/FeatureIdea.urlbutton/icon.dark.png" alt="Feature Idea dark icon" width="48" />
 
 **Purpose and productivity**
@@ -57,8 +52,6 @@ No user settings.
 ## General Panel
 
 ### Active Workset
-**Icon**
-<img src="../PYLAB.extension/PYLAB.tab/Functions.Panel/ActiveWorkset.pushbutton/icon.light.png" alt="Active Workset light icon" width="48" />
 <img src="../PYLAB.extension/PYLAB.tab/Functions.Panel/ActiveWorkset.pushbutton/icon.dark.png" alt="Active Workset dark icon" width="48" />
 
 **Purpose and productivity**
@@ -76,8 +69,6 @@ Reads the selected element's `WorksetId` and updates the active workset through 
 No user settings.
 
 ### Copy Filter
-**Icon**
-<img src="../PYLAB.extension/PYLAB.tab/Functions.Panel/CopyFilters.pushbutton/icon.light.png" alt="Copy Filter light icon" width="48" />
 <img src="../PYLAB.extension/PYLAB.tab/Functions.Panel/CopyFilters.pushbutton/icon.dark.png" alt="Copy Filter dark icon" width="48" />
 
 **Purpose and productivity**
@@ -97,8 +88,6 @@ Reads the selected filters and their override settings from the active view, the
 No persistent settings.
 
 ### Copy Parameters
-**Icon**
-<img src="../PYLAB.extension/PYLAB.tab/Functions.Panel/CopyParameter.pushbutton/icon.light.png" alt="Copy Parameters light icon" width="48" />
 <img src="../PYLAB.extension/PYLAB.tab/Functions.Panel/CopyParameter.pushbutton/icon.dark.png" alt="Copy Parameters dark icon" width="48" />
 
 **Purpose and productivity**
@@ -118,8 +107,6 @@ The command finds all instances with the same `Family and Type` as the picked el
 No persistent settings.
 
 ### Element IDs
-**Icon**
-<img src="../PYLAB.extension/PYLAB.tab/Functions.Panel/LinkedElemID.pushbutton/icon.light.png" alt="Element IDs light icon" width="48" />
 <img src="../PYLAB.extension/PYLAB.tab/Functions.Panel/LinkedElemID.pushbutton/icon.dark.png" alt="Element IDs dark icon" width="48" />
 
 **Purpose and productivity**
@@ -138,8 +125,6 @@ Prints model element IDs and linked element IDs together with the `Family and Ty
 No user settings.
 
 ### Element 3D Focus
-**Icon**
-<img src="../PYLAB.extension/PYLAB.tab/Functions.Panel/Element3DFocus.pushbutton/icon.light.png" alt="Element 3D Focus light icon" width="48" />
 <img src="../PYLAB.extension/PYLAB.tab/Functions.Panel/Element3DFocus.pushbutton/icon.dark.png" alt="Element 3D Focus dark icon" width="48" />
 
 **Purpose and productivity**
@@ -160,8 +145,6 @@ Use **Shift-click** on the button to open settings:
 - Optional temporary isolate in the 3D view
 
 ### Family Shortcut
-**Icon**
-<img src="../PYLAB.extension/PYLAB.tab/Functions.Panel/FamilyShortcut.pushbutton/icon.light.png" alt="Family Shortcut light icon" width="48" />
 <img src="../PYLAB.extension/PYLAB.tab/Functions.Panel/FamilyShortcut.pushbutton/icon.dark.png" alt="Family Shortcut dark icon" width="48" />
 
 **Purpose and productivity**
@@ -186,8 +169,6 @@ Use **Shift-click** to open the shortcut manager:
 Shortcuts must contain exactly 2 letters, and enabled shortcuts must be unique.
 
 ### Measure Elem
-**Icon**
-<img src="../PYLAB.extension/PYLAB.tab/Functions.Panel/MeasureElem.pushbutton/icon.light.png" alt="Measure Elem light icon" width="48" />
 <img src="../PYLAB.extension/PYLAB.tab/Functions.Panel/MeasureElem.pushbutton/icon.dark.png" alt="Measure Elem dark icon" width="48" />
 
 **Purpose and productivity**
@@ -207,8 +188,6 @@ The command reads element lengths, converts them to meters, groups them by type 
 No user settings.
 
 ### Place in Rooms/Spaces
-**Icon**
-<img src="../PYLAB.extension/PYLAB.tab/Functions.Panel/PlaceInRoomsSpaces.pushbutton/icon.light.png" alt="Place in Rooms Spaces light icon" width="48" />
 <img src="../PYLAB.extension/PYLAB.tab/Functions.Panel/PlaceInRoomsSpaces.pushbutton/icon.dark.png" alt="Place in Rooms Spaces dark icon" width="48" />
 
 **Purpose and productivity**
@@ -242,8 +221,6 @@ No Shift-click settings, but the window provides working options:
 - Excel export and import support for family assignment workflows
 
 ### SectionReset
-**Icon**
-<img src="../PYLAB.extension/PYLAB.tab/Functions.Panel/SectionReset.pushbutton/icon.light.png" alt="SectionReset light icon" width="48" />
 <img src="../PYLAB.extension/PYLAB.tab/Functions.Panel/SectionReset.pushbutton/icon.dark.png" alt="SectionReset dark icon" width="48" />
 
 **Purpose and productivity**
@@ -262,8 +239,6 @@ For reset, it rebuilds the section box as a world-aligned box around the current
 No persistent settings.
 
 ### Space Search
-**Icon**
-<img src="../PYLAB.extension/PYLAB.tab/Functions.Panel/SpaceSearch.pushbutton/icon.light.png" alt="Space Search light icon" width="48" />
 <img src="../PYLAB.extension/PYLAB.tab/Functions.Panel/SpaceSearch.pushbutton/icon.dark.png" alt="Space Search dark icon" width="48" />
 
 **Purpose and productivity**
@@ -283,8 +258,6 @@ No user settings.
 ## MEP Panel
 
 ### Add Insulation
-**Icon**
-<img src="../PYLAB.extension/PYLAB.tab/MEPHelp.Panel/AddIns.pushbutton/icon.light.png" alt="Add Insulation light icon" width="48" />
 <img src="../PYLAB.extension/PYLAB.tab/MEPHelp.Panel/AddIns.pushbutton/icon.dark.png" alt="Add Insulation dark icon" width="48" />
 
 **Purpose and productivity**
@@ -304,8 +277,6 @@ The tool groups the selected elements by family/type and size, asks for thicknes
 No persistent settings. Thickness is entered each run.
 
 ### Batch Change Pipe Type
-**Icon**
-<img src="../PYLAB.extension/PYLAB.tab/MEPHelp.Panel/BatchChangeType.pushbutton/icon.light.png" alt="Batch Change Pipe Type light icon" width="48" />
 <img src="../PYLAB.extension/PYLAB.tab/MEPHelp.Panel/BatchChangeType.pushbutton/icon.dark.png" alt="Batch Change Pipe Type dark icon" width="48" />
 
 **Purpose and productivity**
@@ -325,8 +296,6 @@ The tool changes pipe instances directly to the selected type. For fittings, it 
 No user settings.
 
 ### Bypass
-**Icon**
-<img src="../PYLAB.extension/PYLAB.tab/MEPHelp.Panel/Bypass.pushbutton/icon.light.png" alt="Bypass light icon" width="48" />
 <img src="../PYLAB.extension/PYLAB.tab/MEPHelp.Panel/Bypass.pushbutton/icon.dark.png" alt="Bypass dark icon" width="48" />
 
 **Purpose and productivity**
@@ -342,8 +311,6 @@ It validates linked-model wall picks. It does not currently create geometry or c
 No user settings.
 
 ### Pipe/duct Offset
-**Icon**
-<img src="../PYLAB.extension/PYLAB.tab/MEPHelp.Panel/PipeDuctOffset.pushbutton/icon.light.png" alt="Pipe duct Offset light icon" width="48" />
 <img src="../PYLAB.extension/PYLAB.tab/MEPHelp.Panel/PipeDuctOffset.pushbutton/icon.dark.png" alt="Pipe duct Offset dark icon" width="48" />
 
 **Purpose and productivity**
@@ -364,8 +331,6 @@ Use **Shift-click** to open settings:
 - Whether insulation thickness is included in the spacing calculation
 
 ### Parallel Pipe Connect
-**Icon**
-<img src="../PYLAB.extension/PYLAB.tab/MEPHelp.Panel/PipeConnect.pushbutton/icon.light.png" alt="Parallel Pipe Connect light icon" width="48" />
 <img src="../PYLAB.extension/PYLAB.tab/MEPHelp.Panel/PipeConnect.pushbutton/icon.dark.png" alt="Parallel Pipe Connect dark icon" width="48" />
 
 **Purpose and productivity**
@@ -383,8 +348,6 @@ It collects unconnected pipe connectors, finds the closest pair, creates a new p
 No persistent settings.
 
 ### Air Terminal Calculator Settings
-**Icon**
-<img src="../PYLAB.extension/PYLAB.tab/MEPHelp.Panel/AirTerminalCalculator.pulldown/Air_terminal_calc_setting.pushbutton/icon.light.png" alt="Air Terminal Calculator Settings light icon" width="48" />
 <img src="../PYLAB.extension/PYLAB.tab/MEPHelp.Panel/AirTerminalCalculator.pulldown/Air_terminal_calc_setting.pushbutton/icon.dark.png" alt="Air Terminal Calculator Settings dark icon" width="48" />
 
 **Purpose and productivity**
@@ -408,8 +371,6 @@ This button is itself the settings editor. It updates:
 - `air_terminals_return_settings.json`
 
 ### Air Terminal Calculator (Supply)
-**Icon**
-<img src="../PYLAB.extension/PYLAB.tab/MEPHelp.Panel/AirTerminalCalculator.pulldown/Air_terminal_calc_supply.pushbutton/icon.light.png" alt="Air Terminal Calculator Supply light icon" width="48" />
 <img src="../PYLAB.extension/PYLAB.tab/MEPHelp.Panel/AirTerminalCalculator.pulldown/Air_terminal_calc_supply.pushbutton/icon.dark.png" alt="Air Terminal Calculator Supply dark icon" width="48" />
 
 **Purpose and productivity**
@@ -429,8 +390,6 @@ It loads the supply settings JSON, filters configured options by the entered flo
 Use `Air terminal calculator settings` to edit available records.
 
 ### Air Terminal Calculator (Return)
-**Icon**
-<img src="../PYLAB.extension/PYLAB.tab/MEPHelp.Panel/AirTerminalCalculator.pulldown/Air_terminal_calc_return.pushbutton/icon.light.png" alt="Air Terminal Calculator Return light icon" width="48" />
 <img src="../PYLAB.extension/PYLAB.tab/MEPHelp.Panel/AirTerminalCalculator.pulldown/Air_terminal_calc_return.pushbutton/icon.dark.png" alt="Air Terminal Calculator Return dark icon" width="48" />
 
 **Purpose and productivity**
@@ -452,8 +411,6 @@ Use `Air terminal calculator settings` to edit available records.
 ## AECVision Integration Panel
 
 ### Walls from AECVision
-**Icon**
-<img src="../PYLAB.extension/PYLAB.tab/AECVisionIntegration.Panel/WallsFromAECVision.pushbutton/icon.light.png" alt="Walls from AECVision light icon" width="48" />
 <img src="../PYLAB.extension/PYLAB.tab/AECVisionIntegration.Panel/WallsFromAECVision.pushbutton/icon.dark.png" alt="Walls from AECVision dark icon" width="48" />
 
 **Purpose and productivity**
