@@ -75,9 +75,39 @@ DEFAULT_ANGLE = "45"
 DEFAULT_CLEARANCE = 50.0
 DEFAULT_INCLUDE_INSULATION = True
 TITLE = "Bypass"
+MIN_SEGMENT_LENGTH_FACTOR = 1.0
+SEGMENT_LENGTH_FACTOR_STEP = 0.25
+MAX_SEGMENT_LENGTH_FACTOR = 4.0
+SPACING_RETRY_ERROR_MARKERS = (
+    "additional fitting spacing",
+    "causing the connections to be invalid",
+    "opposite direction",
+    "not close enough for intersection",
+    "not close enough together",
+)
+INSUFFICIENT_SECTION_ERROR_MARKERS = (
+    "installation section is too short",
+    "bypass legs are too short",
+)
+TOP_STRAIGHT_CONNECTION_MARKERS = (
+    "rise-top",
+    "top-drop",
+)
+COMMIT_RETRY_WARNING_MARKERS = (
+    "opposite direction causing the connections to be invalid",
+    "modified to be in the opposite direction",
+)
 
 
 class BypassFailuresPreprocessor(IFailuresPreprocessor):
+    def __init__(self, rollback_warning_markers=None):
+        self.rollback_warning_markers = [
+            (marker or "").lower() for marker in (rollback_warning_markers or [])
+        ]
+        self.warning_messages = []
+        self.retryable_warning_messages = []
+        self.rollback_requested = False
+
     def PreprocessFailures(self, failures_accessor):
         try:
             failure_messages = list(failures_accessor.GetFailureMessages())
@@ -86,11 +116,28 @@ class BypassFailuresPreprocessor(IFailuresPreprocessor):
 
         for failure_message in failure_messages:
             try:
+                description = failure_message.GetDescriptionText() or ""
+            except Exception:
+                description = ""
+
+            if description:
+                self.warning_messages.append(description)
+                normalized_description = description.lower()
+                if any(
+                    marker in normalized_description
+                    for marker in self.rollback_warning_markers
+                ):
+                    self.retryable_warning_messages.append(description)
+                    self.rollback_requested = True
+
+            try:
                 if failure_message.GetSeverity() == FailureSeverity.Warning:
                     failures_accessor.DeleteWarning(failure_message)
             except Exception:
                 continue
 
+        if self.rollback_requested:
+            return FailureProcessingResult.ProceedWithRollBack
         return FailureProcessingResult.Continue
 
 
@@ -634,14 +681,24 @@ def get_nearest_connector(element, point, require_open):
     return best_connector
 
 
-def connect_with_elbow(element_a, point_a, element_b, point_b):
+def connect_with_elbow(element_a, point_a, element_b, point_b, connection_label=None):
     connector_a = get_nearest_connector(element_a, point_a, True)
     connector_b = get_nearest_connector(element_b, point_b, True)
     if connector_a is None or connector_b is None:
+        if connection_label:
+            raise Exception(
+                "Could not find open connectors for elbow connection [{}].".format(
+                    connection_label
+                )
+            )
         raise Exception("Could not find open connectors for elbow connection.")
     try:
         doc.Create.NewElbowFitting(connector_a, connector_b)
     except Exception as elbow_error:
+        if connection_label:
+            raise Exception(
+                "Failed to insert elbow [{}]: {}".format(connection_label, elbow_error)
+            )
         raise Exception("Failed to insert elbow: {}".format(elbow_error))
 
 
@@ -860,6 +917,54 @@ def get_required_straight_length(profile):
             profile.get("outer_height", 0.0),
         )
     return max(short_curve_min, size_based_length)
+
+
+def get_segment_length_factors():
+    factors = []
+    current_factor = MIN_SEGMENT_LENGTH_FACTOR
+    while current_factor <= MAX_SEGMENT_LENGTH_FACTOR + EPS:
+        factors.append(round(current_factor, 2))
+        current_factor += SEGMENT_LENGTH_FACTOR_STEP
+    return factors
+
+
+def get_required_bypass_segment_length(required_straight_length, segment_length_factor):
+    try:
+        factor = float(segment_length_factor)
+    except Exception:
+        factor = MIN_SEGMENT_LENGTH_FACTOR
+    factor = max(MIN_SEGMENT_LENGTH_FACTOR, factor)
+    return required_straight_length * factor, factor
+
+
+def is_spacing_retryable_error_message(message):
+    text = (message or "").lower()
+    if not text:
+        return False
+    for marker in SPACING_RETRY_ERROR_MARKERS:
+        if marker in text:
+            return True
+    return False
+
+
+def is_insufficient_section_error_message(message):
+    text = (message or "").lower()
+    if not text:
+        return False
+    for marker in INSUFFICIENT_SECTION_ERROR_MARKERS:
+        if marker in text:
+            return True
+    return False
+
+
+def is_top_straight_retryable_error_message(message):
+    text = (message or "").lower()
+    if not text or not is_spacing_retryable_error_message(text):
+        return False
+    for marker in TOP_STRAIGHT_CONNECTION_MARKERS:
+        if marker in text:
+            return True
+    return False
 
 
 def get_type_display_name(element):
@@ -1381,7 +1486,13 @@ def validate_source_curve(element):
     return curve_line, axis_x
 
 
-def build_bypass_plan(source_element, obstacle_info, options, clearance_internal):
+def build_bypass_plan(
+    source_element,
+    obstacle_info,
+    options,
+    clearance_internal,
+    segment_length_factor=MIN_SEGMENT_LENGTH_FACTOR,
+):
     curve_line, axis_x = validate_source_curve(source_element)
     source_origin = curve_line.GetEndPoint(0)
     source_plan_factor = get_curve_plan_factor(curve_line)
@@ -1390,6 +1501,11 @@ def build_bypass_plan(source_element, obstacle_info, options, clearance_internal
 
     profile = get_curve_profile(source_element, options.include_insulation)
     required_straight_length = get_required_straight_length(profile)
+    required_top_segment_length, segment_length_factor = get_required_bypass_segment_length(
+        required_straight_length,
+        segment_length_factor,
+    )
+    required_leg_segment_length = required_straight_length
     required_source_plan_length = required_straight_length * source_plan_factor
     obstacle_bounds = get_local_obstacle_bounds(
         source_origin,
@@ -1420,9 +1536,9 @@ def build_bypass_plan(source_element, obstacle_info, options, clearance_internal
     minimum_vertical_delta = abs(minimum_target_z - source_z)
 
     if options.angle_degrees >= 89.999:
-        minimum_vertical_for_leg = required_straight_length
+        minimum_vertical_for_leg = required_leg_segment_length
     else:
-        minimum_vertical_for_leg = required_straight_length * math.sin(
+        minimum_vertical_for_leg = required_leg_segment_length * math.sin(
             math.radians(options.angle_degrees)
         )
 
@@ -1447,13 +1563,17 @@ def build_bypass_plan(source_element, obstacle_info, options, clearance_internal
     base_start_top_s = obstacle_bounds["min_s"] - clearance_internal
     base_end_top_s = obstacle_bounds["max_s"] + clearance_internal
     base_top_span = base_end_top_s - base_start_top_s
-    additional_top_span = max(0.0, required_straight_length - base_top_span)
+    additional_top_span = max(0.0, required_top_segment_length - base_top_span)
     extra_top_span_each_side = additional_top_span * 0.5
 
     start_top_s = base_start_top_s - extra_top_span_each_side
     end_top_s = base_end_top_s + extra_top_span_each_side
     top_segment_length = end_top_s - start_top_s
-    leg_segment_length = required_straight_length if options.angle_degrees >= 89.999 else abs(vertical_delta) / math.sin(angle_radians)
+    leg_segment_length = (
+        required_leg_segment_length
+        if options.angle_degrees >= 89.999
+        else abs(vertical_delta) / math.sin(angle_radians)
+    )
 
     start_break_s = start_top_s - run_length
     end_break_s = end_top_s + run_length
@@ -1470,11 +1590,11 @@ def build_bypass_plan(source_element, obstacle_info, options, clearance_internal
         raise Exception("Invalid bypass start geometry.")
     if end_break_s - end_top_s < -EPS:
         raise Exception("Invalid bypass end geometry.")
-    if top_segment_length + EPS < required_straight_length:
+    if top_segment_length + EPS < required_top_segment_length:
         raise Exception(
             "Installation section is too short to keep the required straight segment between bypass fittings."
         )
-    if leg_segment_length + EPS < required_straight_length:
+    if leg_segment_length + EPS < required_leg_segment_length:
         raise Exception(
             "Bypass legs are too short to satisfy fitting spacing requirements."
         )
@@ -1494,6 +1614,10 @@ def build_bypass_plan(source_element, obstacle_info, options, clearance_internal
         "source_end": xyz_to_data(curve_line.GetEndPoint(1)),
         "source_plan_length": source_plan_length,
         "required_straight_length": required_straight_length,
+        "required_bypass_segment_length": required_top_segment_length,
+        "required_top_segment_length": required_top_segment_length,
+        "required_leg_segment_length": required_leg_segment_length,
+        "segment_length_factor": segment_length_factor,
         "required_source_plan_length": required_source_plan_length,
         "minimum_target_z": minimum_target_z,
         "target_z": target_z,
@@ -1514,12 +1638,24 @@ def build_bypass_plan(source_element, obstacle_info, options, clearance_internal
     }
 
 
-def create_bypass_for_curve(source_element, obstacle_info, options, clearance_internal):
+def create_bypass_for_curve_attempt(
+    source_element,
+    obstacle_info,
+    options,
+    clearance_internal,
+    segment_length_factor,
+):
     covering_specs = get_curve_covering_specs(source_element)
     profile = get_curve_profile(source_element, options.include_insulation)
     type_name = get_type_display_name(source_element)
     size_label = get_profile_size_label(profile)
-    bypass_plan = build_bypass_plan(source_element, obstacle_info, options, clearance_internal)
+    bypass_plan = build_bypass_plan(
+        source_element,
+        obstacle_info,
+        options,
+        clearance_internal,
+        segment_length_factor,
+    )
 
     debug_data = {
         "source_element_id": source_element.Id.IntegerValue,
@@ -1531,6 +1667,10 @@ def create_bypass_for_curve(source_element, obstacle_info, options, clearance_in
         "source_end": bypass_plan.get("source_end"),
         "source_plan_length": bypass_plan.get("source_plan_length"),
         "required_straight_length": bypass_plan.get("required_straight_length"),
+        "required_bypass_segment_length": bypass_plan.get("required_bypass_segment_length"),
+        "required_top_segment_length": bypass_plan.get("required_top_segment_length"),
+        "required_leg_segment_length": bypass_plan.get("required_leg_segment_length"),
+        "segment_length_factor": bypass_plan.get("segment_length_factor"),
         "required_source_plan_length": bypass_plan.get("required_source_plan_length"),
         "minimum_target_z": bypass_plan.get("minimum_target_z"),
         "target_z": bypass_plan.get("target_z"),
@@ -1637,10 +1777,34 @@ def create_bypass_for_curve(source_element, obstacle_info, options, clearance_in
             drop_segment = create_curve_like(source_element, drop_start, drop_end)
             doc.Regenerate()
 
-            connect_with_elbow(left_segment, bypass_plan["point_1"], rise_segment, bypass_plan["point_1"])
-            connect_with_elbow(rise_segment, bypass_plan["point_2"], top_segment, bypass_plan["point_2"])
-            connect_with_elbow(top_segment, bypass_plan["point_3"], drop_segment, bypass_plan["point_3"])
-            connect_with_elbow(drop_segment, bypass_plan["point_4"], right_segment, bypass_plan["point_4"])
+            connect_with_elbow(
+                left_segment,
+                bypass_plan["point_1"],
+                rise_segment,
+                bypass_plan["point_1"],
+                "source-rise",
+            )
+            connect_with_elbow(
+                rise_segment,
+                bypass_plan["point_2"],
+                top_segment,
+                bypass_plan["point_2"],
+                "rise-top",
+            )
+            connect_with_elbow(
+                top_segment,
+                bypass_plan["point_3"],
+                drop_segment,
+                bypass_plan["point_3"],
+                "top-drop",
+            )
+            connect_with_elbow(
+                drop_segment,
+                bypass_plan["point_4"],
+                right_segment,
+                bypass_plan["point_4"],
+                "drop-source",
+            )
 
             covering_warnings = apply_coverings(
                 [rise_segment, top_segment, drop_segment],
@@ -1678,6 +1842,16 @@ def create_bypass_for_curve(source_element, obstacle_info, options, clearance_in
 
     debug_data["orientation_attempts"] = attempt_errors
     debug_data["requested_angle_degrees"] = options.angle_label
+    if any(
+        is_top_straight_retryable_error_message(attempt.get("error"))
+        for attempt in attempt_errors
+    ):
+        debug_data["spacing_retryable"] = True
+        debug_data["spacing_retry_reason"] = "top_straight_section"
+        raise BypassCreationError(
+            "Bypass requires a longer straight section between elbows for this size and angle.",
+            debug_data,
+        )
     raise BypassCreationError(
         "Selected type '{}' does not support {} deg elbows for size {} under current routing preferences.".format(
             type_name,
@@ -1688,24 +1862,106 @@ def create_bypass_for_curve(source_element, obstacle_info, options, clearance_in
     )
 
 
+def create_bypass_for_curve(source_element, obstacle_info, options, clearance_internal):
+    profile = get_curve_profile(source_element, options.include_insulation)
+    size_label = get_profile_size_label(profile)
+    attempted_factors = []
+    last_spacing_error = None
+    last_spacing_debug = None
+
+    for segment_length_factor in get_segment_length_factors():
+        attempted_factors.append(segment_length_factor)
+        transaction = Transaction(doc, "Create bypass - PYLAB")
+        transaction.Start()
+        failure_preprocessor = BypassFailuresPreprocessor(COMMIT_RETRY_WARNING_MARKERS)
+        failure_options = transaction.GetFailureHandlingOptions()
+        failure_options.SetFailuresPreprocessor(failure_preprocessor)
+        failure_options.SetClearAfterRollback(True)
+        transaction.SetFailureHandlingOptions(failure_options)
+
+        try:
+            result_message, warning_message, debug_data = create_bypass_for_curve_attempt(
+                source_element,
+                obstacle_info,
+                options,
+                clearance_internal,
+                segment_length_factor,
+            )
+            debug_data["attempted_segment_length_factors"] = attempted_factors
+            commit_status = transaction.Commit()
+            debug_data["commit_warning_messages"] = list(
+                failure_preprocessor.warning_messages
+            )
+
+            if failure_preprocessor.rollback_requested:
+                last_spacing_error = (
+                    failure_preprocessor.retryable_warning_messages[-1]
+                    if failure_preprocessor.retryable_warning_messages
+                    else "Transaction rolled back because Revit reported invalid bypass connections."
+                )
+                debug_data["spacing_retryable"] = True
+                debug_data["spacing_retry_reason"] = "commit_warning"
+                debug_data["spacing_retry_last_error"] = last_spacing_error
+                last_spacing_debug = debug_data
+                continue
+
+            if commit_status != DB.TransactionStatus.Committed:
+                raise BypassCreationError(
+                    "Bypass transaction did not commit.",
+                    debug_data,
+                )
+
+            return result_message, warning_message, debug_data
+        except Exception as attempt_error:
+            if transaction.HasStarted():
+                transaction.RollBack()
+
+            attempt_message = str(attempt_error)
+            attempt_debug = getattr(attempt_error, "debug_data", {}) or {}
+            attempt_debug["attempted_segment_length_factors"] = attempted_factors
+
+            if attempt_debug.get("spacing_retryable") or is_top_straight_retryable_error_message(
+                attempt_message
+            ):
+                last_spacing_error = attempt_message
+                last_spacing_debug = attempt_debug
+                continue
+
+            if last_spacing_error and is_insufficient_section_error_message(attempt_message):
+                failure_debug = dict(last_spacing_debug or {})
+                failure_debug.update(attempt_debug)
+                failure_debug["attempted_segment_length_factors"] = attempted_factors
+                failure_debug["spacing_retry_last_error"] = last_spacing_error
+                raise BypassCreationError(
+                    "Installation section is too short to create a bypass with a long enough straight section between elbows for size {}.".format(
+                        size_label
+                    ),
+                    failure_debug,
+                )
+
+            raise
+
+    failure_debug = dict(last_spacing_debug or {})
+    failure_debug["attempted_segment_length_factors"] = attempted_factors
+    if last_spacing_error:
+        failure_debug["spacing_retry_last_error"] = last_spacing_error
+    raise BypassCreationError(
+        "Installation section is too short to create a bypass with a long enough straight section between elbows for size {}.".format(
+            size_label
+        ),
+        failure_debug,
+    )
+
+
 def process_curves(source_elements, obstacle_info, options, clearance_internal):
     results = []
     debug_records = []
     transaction_group = TransactionGroup(doc, "Create bypass - PYLAB")
     transaction_group.Start()
 
-    transaction = Transaction(doc, "Create bypass - PYLAB")
-    transaction.Start()
-    failure_options = transaction.GetFailureHandlingOptions()
-    failure_options.SetFailuresPreprocessor(BypassFailuresPreprocessor())
-    failure_options.SetClearAfterRollback(True)
-    transaction.SetFailureHandlingOptions(failure_options)
-
     try:
         for source_element in source_elements:
             source_label = get_element_label(source_element)
-            sub_transaction = SubTransaction(doc)
-            sub_transaction.Start()
 
             try:
                 result_message, warning_message, debug_data = create_bypass_for_curve(
@@ -1714,7 +1970,6 @@ def process_curves(source_elements, obstacle_info, options, clearance_internal):
                     options,
                     clearance_internal,
                 )
-                sub_transaction.Commit()
                 results.append(
                     BypassResult(
                         source_label,
@@ -1726,8 +1981,6 @@ def process_curves(source_elements, obstacle_info, options, clearance_internal):
                 debug_data["status"] = "Success"
                 debug_records.append(debug_data)
             except Exception as source_error:
-                if sub_transaction.HasStarted():
-                    sub_transaction.RollBack()
                 results.append(
                     BypassResult(
                         source_label,
@@ -1754,17 +2007,34 @@ def process_curves(source_elements, obstacle_info, options, clearance_internal):
                     except Exception:
                         pass
                 try:
+                    failure_segment_length_factor = failure_debug.get(
+                        "segment_length_factor",
+                        MIN_SEGMENT_LENGTH_FACTOR,
+                    )
                     failure_plan = build_bypass_plan(
                         source_element,
                         obstacle_info,
                         options,
                         clearance_internal,
+                        failure_segment_length_factor,
                     )
                     failure_debug["source_curve"] = failure_plan.get("source_curve")
                     failure_debug["source_start"] = failure_plan.get("source_start")
                     failure_debug["source_end"] = failure_plan.get("source_end")
                     failure_debug["source_plan_length"] = failure_plan.get("source_plan_length")
                     failure_debug["required_straight_length"] = failure_plan.get("required_straight_length")
+                    failure_debug["required_bypass_segment_length"] = failure_plan.get(
+                        "required_bypass_segment_length"
+                    )
+                    failure_debug["required_top_segment_length"] = failure_plan.get(
+                        "required_top_segment_length"
+                    )
+                    failure_debug["required_leg_segment_length"] = failure_plan.get(
+                        "required_leg_segment_length"
+                    )
+                    failure_debug["segment_length_factor"] = failure_plan.get(
+                        "segment_length_factor"
+                    )
                     failure_debug["required_source_plan_length"] = failure_plan.get("required_source_plan_length")
                     failure_debug["minimum_target_z"] = failure_plan.get("minimum_target_z")
                     failure_debug["target_z"] = failure_plan.get("target_z")
@@ -1787,12 +2057,8 @@ def process_curves(source_elements, obstacle_info, options, clearance_internal):
                 debug_records.append(
                     failure_debug
                 )
-
-        transaction.Commit()
         transaction_group.Assimilate()
     except Exception:
-        if transaction.HasStarted():
-            transaction.RollBack()
         transaction_group.RollBack()
         raise
 
