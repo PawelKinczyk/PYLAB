@@ -299,11 +299,11 @@ No user settings.
 <img src="../PYLAB.extension/PYLAB.tab/MEPHelp.Panel/Bypass.pushbutton/icon.dark.png" alt="Bypass dark icon" width="48" />
 
 **Purpose and productivity**
-Creates bypasses for selected pipes and ducts around one obstacle in the active model or in a linked model. It is useful for quickly resolving coordination clashes while keeping the modified installation on its original system and type context.
+Creates bypasses for selected pipes or ducts around one picked obstacle in the active model or in a linked model. It speeds up clash-resolution work by rebuilding the route with a controlled `Above` or `Below` offset while keeping the element on its original system and type context.
 
 **How to use**
 1. Click `Bypass`.
-2. Select one or more pipes and/or ducts in the active model.
+2. Select one or more straight, near-horizontal pipes or ducts in the active model.
 3. Choose whether the obstacle will be picked from the `Active model` or a `Linked model`.
 4. Pick the obstacle element.
 5. Choose:
@@ -311,10 +311,11 @@ Creates bypasses for selected pipes and ducts around one obstacle in the active 
    `30`, `45`, or `90` degree bypass angle,
    clearance value in project units,
    and whether insulation should be included in the calculations.
-6. Review the final summary dialog and the detailed pyRevit output report.
+6. Let the command process each selected element.
+7. Review the pyRevit output report and summary.
 
 **What it does**
-For each selected straight, near-horizontal pipe or duct, the command reads the obstacle geometry, calculates the shortest valid bypass for the chosen direction and angle, splits the original curve, creates three new bypass segments, reconnects them with fittings, and tries to restore matching insulation or lining on the new segments. If one selected element cannot be routed, that element is rolled back and listed as a failure while other valid elements can still succeed.
+For each selected element, the command validates that the curve is straight and near-horizontal, reads the obstacle geometry from the active model or link, calculates a bypass path that satisfies the selected direction, angle, and clearance, splits the original curve, creates three new bypass segments, and reconnects everything with elbows. It also tries to restore matching pipe insulation, duct insulation, or duct lining on the new segments. Each element is processed independently, so failures are rolled back per element and listed in the report while other valid elements can still succeed. A debug cache for the last run is also written to `%APPDATA%\pyRevit\PYLAB\Bypass\last_run_debug.json`.
 
 **Settings**
 The last-used options are remembered automatically:
