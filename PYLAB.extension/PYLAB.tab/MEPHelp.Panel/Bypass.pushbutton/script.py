@@ -347,6 +347,59 @@ class BypassOptionsDialog(Form):
         self.Close()
 
 
+class ObstacleSourceDialog(Form):
+    def __init__(self):
+        self.Text = TITLE
+        self.FormBorderStyle = FormBorderStyle.FixedDialog
+        self.StartPosition = FormStartPosition.CenterScreen
+        self.MinimizeBox = False
+        self.MaximizeBox = False
+        self.SuspendLayout()
+
+        left_margin = 16
+        top_margin = 16
+        button_width = 130
+        button_height = 30
+        button_gap = 12
+
+        prompt_label = Label()
+        prompt_label.Text = "Select obstacle source"
+        prompt_label.AutoSize = True
+        prompt_label.Location = Point(left_margin, top_margin)
+        self.Controls.Add(prompt_label)
+
+        current_y = prompt_label.Bottom + 18
+
+        active_button = Button()
+        active_button.Text = "Active model"
+        active_button.Size = Size(button_width, button_height)
+        active_button.Location = Point(left_margin, current_y)
+        active_button.Click += self._on_active_click
+        self.Controls.Add(active_button)
+
+        linked_button = Button()
+        linked_button.Text = "Linked model"
+        linked_button.Size = Size(button_width, button_height)
+        linked_button.Location = Point(active_button.Right + button_gap, current_y)
+        linked_button.Click += self._on_linked_click
+        self.Controls.Add(linked_button)
+
+        self.ClientSize = Size(linked_button.Right + left_margin, linked_button.Bottom + 16)
+        self.AcceptButton = active_button
+        self.result = None
+        self.ResumeLayout(True)
+
+    def _on_active_click(self, sender, args):
+        self.result = "Active model"
+        self.DialogResult = DialogResult.OK
+        self.Close()
+
+    def _on_linked_click(self, sender, args):
+        self.result = "Linked model"
+        self.DialogResult = DialogResult.OK
+        self.Close()
+
+
 def parse_numeric_text(text_value):
     if text_value is None:
         return None
@@ -1423,13 +1476,10 @@ def pick_source_curves():
 
 
 def pick_obstacle():
-    pick_mode = forms.CommandSwitchWindow.show(
-        ["Active model", "Linked model"],
-        message="Select obstacle source",
-        recognize_access_key=False,
-    )
-    if pick_mode is None:
+    dialog = ObstacleSourceDialog()
+    if dialog.ShowDialog() != DialogResult.OK:
         return None
+    pick_mode = dialog.result
 
     if pick_mode == "Active model":
         try:
@@ -2115,12 +2165,9 @@ def show_summary(results, debug_file_path):
     if debug_file_path:
         summary_lines.append("Debug cache: {}".format(debug_file_path))
 
-    forms.alert(
-        "\n".join(summary_lines),
-        title=TITLE,
-        warn_icon=failure_count > 0,
-        exitscript=False,
-    )
+    output.print_md("## Summary")
+    for line in summary_lines:
+        print(line)
 
 
 def main():
