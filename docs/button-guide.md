@@ -299,16 +299,29 @@ No user settings.
 <img src="../PYLAB.extension/PYLAB.tab/MEPHelp.Panel/Bypass.pushbutton/icon.dark.png" alt="Bypass dark icon" width="48" />
 
 **Purpose and productivity**
-This button appears to be an unfinished or placeholder workflow for wall-related linked-model selection. It is not currently a full bypass creation tool in the checked-in script.
+Creates bypasses for selected pipes and ducts around one obstacle in the active model or in a linked model. It is useful for quickly resolving coordination clashes while keeping the modified installation on its original system and type context.
 
 **How to use**
-At present, the script only prompts you to pick linked-model walls and then stops.
+1. Click `Bypass`.
+2. Select one or more pipes and/or ducts in the active model.
+3. Choose whether the obstacle will be picked from the `Active model` or a `Linked model`.
+4. Pick the obstacle element.
+5. Choose:
+   `Above` or `Below`,
+   `30`, `45`, or `90` degree bypass angle,
+   clearance value in project units,
+   and whether insulation should be included in the calculations.
+6. Review the final summary dialog and the detailed pyRevit output report.
 
 **What it does**
-It validates linked-model wall picks. It does not currently create geometry or complete a bypass workflow.
+For each selected straight, near-horizontal pipe or duct, the command reads the obstacle geometry, calculates the shortest valid bypass for the chosen direction and angle, splits the original curve, creates three new bypass segments, reconnects them with fittings, and tries to restore matching insulation or lining on the new segments. If one selected element cannot be routed, that element is rolled back and listed as a failure while other valid elements can still succeed.
 
 **Settings**
-No user settings.
+The last-used options are remembered automatically:
+- Direction (`Above` or `Below`)
+- Angle (`30`, `45`, `90`)
+- Clearance value
+- Include insulation toggle
 
 ### Pipe/duct Offset
 <img src="../PYLAB.extension/PYLAB.tab/MEPHelp.Panel/PipeDuctOffset.pushbutton/icon.dark.png" alt="Pipe duct Offset dark icon" width="48" />

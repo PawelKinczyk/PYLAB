@@ -1,4 +1,4 @@
 title: Bypass
-tooltip: Create pipe bypass. Tested on Revit 2021 and 2022 |
+tooltip: Create pipe and duct bypasses around model or linked obstacles with Above/Below, 30/45/90 angle, clearance, and optional insulation-aware calculations. |
     icon from icons8.com/icon/85935/question-mark
 author: Pawel Kinczyk
