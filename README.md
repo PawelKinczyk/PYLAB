@@ -9,6 +9,7 @@ PYLAB is a collection of productivity tools for Autodesk Revit built with pyRevi
 - **Information** panel links for author details, bug reporting, and feature requests.
 - Installation, update, migration, and add-on authoring docs in the repository `docs/` folder.
 - Practical command groupings that map directly to the ribbon layout used inside Revit.
+<img width="1806" height="144" alt="image" src="https://github.com/user-attachments/assets/df59867f-2861-4b22-bd02-de0a8078f4d4" />
 
 ## Installation
 Install directly from GitHub:
