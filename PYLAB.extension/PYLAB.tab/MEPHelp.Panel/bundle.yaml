@@ -7,4 +7,5 @@ layout:
   - PipeConnect
   - SelectSystemPath
   - ParameterCategoryManager
+  - ParamExcelIO
   - AirTerminalCalculator

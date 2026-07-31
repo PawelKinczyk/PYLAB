@@ -1,0 +1,3 @@
+title: "Param.\nExcel I/O"
+tooltip: "Export/import shared parameter category bindings via Excel. Reuses Excel COM interop."
+author: Pawel Kinczyk
