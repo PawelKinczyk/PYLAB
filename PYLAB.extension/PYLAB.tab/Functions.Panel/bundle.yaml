@@ -10,4 +10,5 @@ layout:
   - MeasureElem
   - Element3DFocus
   - SectionReset
+  - RoomViewGenerator
 
