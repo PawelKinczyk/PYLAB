@@ -1,3 +1,4 @@
 title: Model Health
 layout:
   - NamingStandardSettings
+  - PreflightChecks
