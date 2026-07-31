@@ -5,3 +5,4 @@ layout:
   - WorksetCheck
   - PinCheck
   - MissingParamCheck
+  - BIMStandardCheck
