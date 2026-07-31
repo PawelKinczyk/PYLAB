@@ -33,7 +33,8 @@ Przy każdej funkcji niżej explicite zaznaczone, która kategoria dotyczy.
 | 3 | D5 (po D4 silnik) | D8 |
 | 4 | D8 (po D4 + D5) | — |
 | 5 | E2b (generowanie nowej rodziny — wymaga wyboru template) | — |
-| wstrzymane | Cała kategoria F | czeka na materiał źródłowy |
+| 6 | F1 (Openings Creator — fundament otworowania) | — |
+| wstrzymane | — | — |
 
 ---
 
@@ -335,9 +336,66 @@ Edytor: osobny przycisk "Ustawienia Project Setup" z `DataGridView` per sekcja (
 
 ---
 
-## F: Otworowanie — wstrzymane
+## F: Otworowanie — na podstawie analizy Dynamo (2026-07-31)
 
-Cała kategoria (F1-F12) czeka na dostarczenie materiału źródłowego: skrypt/opis logiki z Dynamo oraz wyjaśnienie `IND_Role` (F5). Bez tego F1 (fundament dla F2-F12) nie da się zaplanować. Wracamy do tej sekcji gdy materiał będzie dostępny.
+Źródło: 4 skrypty Dynamo `IND_1.5vRECT_WALL_MULTI`, `IND_1.5vROUND_RECT_WALL_amber` (×2 wersje), `OPEN_DYNAMO`. Wszystkie realizują ten sam algorytm: wykrywanie kolizji rura/kanał → ściana/strop → automatyczne wstawienie rodziny otworu z wymiarowaniem.
+
+**Kluczowe uproszczenia vs Dynamo:**
+- **Bez BimorphNodes** — Revit API ma natywne odpowiedniki (LinkElement → `RevitLinkInstance.GetLinkDocument()` + `FilteredElementCollector`, IntersectsElement → `BoundingBoxIntersectsFilter` + sprawdzenie kolizji)
+- **Bez Dynamo geometrii** — zamiast `Solid.ByUnion` → `BoundingBox.ByGeometry` → `Cuboid`, używamy `element.get_BoundingBox(null)` → `BoundingBoxXYZ.Min/Max` → wymiary
+- **IND_ROLE usunięty** — to był wolny tekst z inputu użytkownika, bez walidacji. Zbędny.
+- **Jeden przycisk** zamiast 3 wariantów — kształt (okrągły/prostokątny) wybierany w UI, kategorie (ściany/stropy) jako checkboxy.
+
+### F1 — Openings Creator (jeden przycisk, wszystkie warianty)
+
+**Problem**: automatyczne tworzenie otworów w ścianach/stropach dla rur i kanałów przechodzących przez przegrody.
+
+**API Revita**:
+- **Elementy do otworowania**: pick rur/kanałów przez użytkownika (`uidoc.Selection.PickObjects` z filtrem `Pipes`/`Ducts`/`PipeFitting`/`DuctFitting` — te same kategorie co w `MeasureElem.pushbutton`)
+- **Wykrywanie hostów (ściany/stropy)**:
+  1. Dla każdego wybranego elementu: `element.get_BoundingBox(null)` → rozszerzenie o tolerancję (margines z UI)
+  2. `BoundingBoxIntersectsFilter(outline)` na `FilteredElementCollector(doc).OfCategory(OST_Walls)` / `OST_Floors` — dostajemy hosty kolidujące z rurą/kanałem
+  3. **Modele linkowane**: `FilteredElementCollector(doc).OfClass(RevitLinkInstance)` → `linkInstance.GetLinkDocument()` → collector w linku z `BoundingBoxIntersectsFilter`
+- **Wymiarowanie otworu**:
+  - **Okrągły**: średnica rury + margines. `BuiltInParameter.RBS_PIPE_OUTER_DIAMETER` / `RBS_CURVE_DIAMETER_PARAM` dla duct. Jeśli rura ma izolację → `element.get_Parameter(BuiltInParameter.RBS_INSULATION_THICKNESS)` → dodaj 2× grubość.
+  - **Prostokątny**: bounding box rury/kanału (W×H) + margines. Z izolacją: `w + i/10 + 2*it` (oryginalny wzór Dynamo)
+  - **Grubość otworu**: grubość hosta — `wall.Width` / `floor.get_Parameter(BuiltInParameter.FLOOR_ATTR_DEFAULT_THICKNESS_PARAM)`
+- **Rodzina otworu**:
+  - Użytkownik wskazuje rodzinę dla okrągłych i osobną dla prostokątnych (dropdown w UI, lista = `FilteredElementCollector(doc).OfClass(FamilySymbol)` filtrowana po kategorii)
+  - Placement: `doc.Create.NewFamilyInstance(faceReference, point, direction, symbol)` — face-based na ścianie/stropie
+  - **Face reference**: dla ściany — ściana ma jedną powierzchnię zewnętrzną; dla stropu — górna powierzchnia. `HostObjectUtils.GetTopFaces(floor)` / `GetSideFaces(wall)`
+- **Rotacja**: `LocationCurve` dla ściany → wektor kierunku → `symbol.LookupParameter("Angle")` / `instance.Location.Rotate()`
+- **Parametry IND_ ustawiane na rodzinie**: `IND_Width`/`IND_Diameter`, `IND_Height`, `IND_Thickness`, `IND_STATUS` (tydzień roku z daty generacji — `datetime.date.today().isocalendar()[1]`)
+- **Mark**: `"-K-"` (konfigurowalny prefix w ustawieniach)
+- **Transakcja**: `TransactionGroup` z per-host `SubTransaction` (wzorzec z Bypass — rollback pojedynczego otworu przy błędzie nie przerywa całej partii)
+
+**UI/menu**: jedno okno WinForms:
+1. **Pick elements** — przycisk "Wybierz rury/kanały" (lub elementy już wstępnie zaznaczone w Revit)
+2. Dropdown **rodzina otworów okrągłych** (prefiltrowane po nazwie/parametrach)
+3. Dropdown **rodzina otworów prostokątnych**
+4. Checkboxy kategorii hostów: `[x] Ściany`, `[x] Stropy`
+5. Checkbox **"Uwzględnij modele linkowane"** + dropdown wyboru linka (lub wszystkie)
+6. **Margines** [mm] — textbox (domyślnie 50 mm, z oryginału: 1 cm → 10 mm dla rect, 90 mm dla round)
+7. Checkbox **"Uwzględnij izolację rury/kanału"** (domyślnie włączone)
+8. **"Generuj otwory"** — button → raport w output window (ile utworzono, ile pominięto, błędy)
+9. Podgląd przed wykonaniem: lista `[pipe name] → [host name] — otwór W×H / Ø` z checkboxem per pozycja (można odznaczyć niechciane)
+
+**Ustawienia**: kategoria **zespołowa** (JSON w folderze przycisku, commitowany):
+- `openings_config.json`:
+  - `margin_rect_mm: 10` — domyślny margines dla prostokątnych
+  - `margin_round_mm: 90` — domyślny margines dla okrągłych (oryginalny +90mm)
+  - `mark_prefix: "-K-"` — prefix do parametru Mark
+  - `insulation_default: true` — czy checkbox izolacji domyślnie włączony
+  - `default_round_family_name: ""` — nazwa domyślnej rodziny okrągłej (pusta = pierwsza z listy)
+  - `default_rect_family_name: ""` — jw. dla prostokątnej
+
+**Uproszczenia świadome (różnice vs Dynamo)**:
+- IND_ROLE usunięty — zbędny parametr tekstowy bez walidacji
+- Brak `DataShapes` UI — zastąpiony natywnym WinForms (jak Bypass)
+- Brak ręcznej geometrii Dynamo — Revit API `get_BoundingBox` + `BoundingBoxIntersectsFilter`
+- Jeden przycisk z wyborem kształtu zamiast 3 osobnych skryptów
+
+**Panel**: MEPHelp.Panel. **Branch**: `feat/f1-openings-creator`
 
 ---
 
@@ -347,3 +405,4 @@ Cała kategoria (F1-F12) czeka na dostarczenie materiału źródłowego: skrypt/
 - **B8**: spike musi potwierdzić który wariant budowy `CategorySet` działa na docelowych wersjach Revita (2023-2026) — patrz sekcja B8.
 - **D1**: czy proxy złożoności rodziny (liczba typów/parametrów) wystarcza, czy od razu potrzebny dokładny rozmiar w bajtach mimo kosztu wydajnościowego.
 - **E2b**: brak bundlowanego `.rft` — użytkownik wskazuje własny przy pierwszym użyciu (świadoma decyzja, nie luka).
+- **F1**: rodziny otworowań muszą być już załadowane w projekcie — narzędzie nie tworzy rodzin, tylko je umieszcza. Użytkownik musi mieć przygotowane rodziny z parametrami IND_Width/Diameter, IND_Height, IND_Thickness.
