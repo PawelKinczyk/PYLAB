@@ -9,9 +9,13 @@ from pyrevit import revit
 clr.AddReference("System.Windows.Forms")
 from System.Windows.Forms import Clipboard
 
+import math
+
 
 doc = revit.doc
 uidoc = revit.uidoc
+
+FT3_TO_LITERS = 28.3168
 
 
 ALLOWED_CATEGORIES = set([
@@ -74,6 +78,23 @@ def get_main_family(categories):
 
 def to_meters(length_feet):
     return length_feet * 0.3048
+
+
+def get_inner_diameter(element):
+    """Get pipe inner diameter in feet. Returns None if unavailable."""
+    diam = get_param_double(element, BuiltInParameter.RBS_PIPE_INNER_DIAM_PARAM)
+    return diam
+
+
+def calc_water_volume_ft3(inner_diameter_ft, length_ft):
+    """Calculate water volume in cubic feet from inner diameter and length."""
+    radius = inner_diameter_ft / 2.0
+    return math.pi * radius * radius * length_ft
+
+
+def to_liters(volume_ft3):
+    """Convert cubic feet to liters."""
+    return volume_ft3 * FT3_TO_LITERS
 
 
 def to_mm(value_feet):
@@ -156,7 +177,9 @@ def wall_group_key(element):
     return "{} | {} mm".format(type_name, to_mm(width))
 
 
-def build_report(family_name, grouped_lengths_m, grand_total_m, measured_count, skipped_count):
+def build_report(family_name, grouped_lengths_m, grand_total_m,
+                 measured_count, skipped_count,
+                 grouped_volume_l=None, grand_total_l=None):
     lines = []
     lines.append("MeasureElem results")
     lines.append("Family: {}".format(family_name))
@@ -165,12 +188,17 @@ def build_report(family_name, grouped_lengths_m, grand_total_m, measured_count, 
 
     sorted_items = sorted(grouped_lengths_m.items(), key=lambda x: x[1], reverse=True)
     for key, length_m in sorted_items:
-        lines.append("- {} = {:.2f} m".format(key, length_m))
+        line = "- {} = {:.2f} m".format(key, length_m)
+        if grouped_volume_l and key in grouped_volume_l:
+            line += "  |  {:.1f} L".format(grouped_volume_l[key])
+        lines.append(line)
 
     lines.append("")
     lines.append("Measured elements: {}".format(measured_count))
     lines.append("Skipped elements: {}".format(skipped_count))
     lines.append("TOTAL LENGTH: {:.2f} m".format(grand_total_m))
+    if grand_total_l is not None:
+        lines.append("TOTAL WATER VOLUME: {:.1f} L".format(grand_total_l))
     return "\n".join(lines)
 
 
@@ -222,8 +250,22 @@ def main():
 
     family_name = list(detected_families)[0]
 
+    # Water volume: ask only for Pipe family
+    calc_water = False
+    if family_name == "Pipe":
+        try:
+            result = forms.CommandSwitchWindow.show(
+                ["Yes", "No"],
+                message="Calculate water volume too?"
+            )
+            calc_water = (result == "Yes")
+        except Exception:
+            calc_water = False
+
     grouped_lengths_m = defaultdict(float)
+    grouped_volume_l = defaultdict(float) if calc_water else None
     skipped_count = 0
+    volume_skipped_count = 0
     measured_count = 0
 
     for element in elements:
@@ -252,6 +294,16 @@ def main():
             length_m = to_meters(length_feet)
             grouped_lengths_m[key] += length_m
             measured_count += 1
+
+            # Water volume for pipes
+            if calc_water:
+                inner_diam_ft = get_inner_diameter(element)
+                if inner_diam_ft is not None and inner_diam_ft > 0:
+                    vol_ft3 = calc_water_volume_ft3(inner_diam_ft, length_feet)
+                    grouped_volume_l[key] += to_liters(vol_ft3)
+                else:
+                    volume_skipped_count += 1
+
         except Exception:
             skipped_count += 1
 
@@ -260,12 +312,18 @@ def main():
         return
 
     grand_total_m = sum(grouped_lengths_m.values())
+    grand_total_l = None
+    if calc_water and grouped_volume_l:
+        grand_total_l = sum(grouped_volume_l.values())
+
     report = build_report(
         family_name=family_name,
         grouped_lengths_m=grouped_lengths_m,
         grand_total_m=grand_total_m,
         measured_count=measured_count,
-        skipped_count=skipped_count,
+        skipped_count=skipped_count + volume_skipped_count,
+        grouped_volume_l=grouped_volume_l if calc_water else None,
+        grand_total_l=grand_total_l,
     )
 
     print(report)
