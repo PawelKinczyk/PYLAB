@@ -6,4 +6,5 @@ layout:
   - Bypass
   - PipeConnect
   - SelectSystemPath
+  - ParameterCategoryManager
   - AirTerminalCalculator
