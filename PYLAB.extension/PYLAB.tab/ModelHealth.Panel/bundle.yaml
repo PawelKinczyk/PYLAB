@@ -3,3 +3,4 @@ layout:
   - NamingStandardSettings
   - PreflightChecks
   - WorksetCheck
+  - PinCheck
