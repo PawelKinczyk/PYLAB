@@ -5,4 +5,5 @@ layout:
   - PipeDuctOffset
   - Bypass
   - PipeConnect
+  - SelectSystemPath
   - AirTerminalCalculator

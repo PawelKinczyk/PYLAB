@@ -1,0 +1,3 @@
+title: "System\nPath"
+tooltip: "Select all elements in a pipe/duct system between two picked elements. Shortest path via BFS."
+author: Pawel Kinczyk
