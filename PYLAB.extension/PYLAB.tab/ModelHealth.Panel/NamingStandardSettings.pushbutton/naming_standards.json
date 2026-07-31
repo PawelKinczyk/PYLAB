@@ -1,0 +1,40 @@
+{
+  "views": {
+    "delimiter": "_",
+    "segments": [
+      {"name": "dyscyplina", "type": "closed", "variants": ["ARC", "MEP", "STR"]},
+      {"name": "poziom", "type": "freetext", "min_len": 1, "max_len": 3},
+      {"name": "typ", "type": "closed", "variants": ["RZUT", "PRZEKROJ", "3D"]},
+      {"name": "opis", "type": "freetext", "max_len": 30}
+    ]
+  },
+  "sheets": {
+    "delimiter": "-",
+    "segments": [
+      {"name": "dyscyplina", "type": "closed", "variants": ["ARC", "MEP", "STR"]},
+      {"name": "numer", "type": "freetext", "min_len": 1, "max_len": 6}
+    ]
+  },
+  "families": {
+    "delimiter": "_",
+    "segments": [
+      {"name": "kategoria", "type": "freetext", "min_len": 1, "max_len": 20},
+      {"name": "opis", "type": "freetext", "max_len": 30}
+    ]
+  },
+  "filters": {
+    "delimiter": "_",
+    "segments": [
+      {"name": "dyscyplina", "type": "closed", "variants": ["ARC", "MEP", "STR"]},
+      {"name": "opis", "type": "freetext", "max_len": 30}
+    ]
+  },
+  "schedules": {
+    "delimiter": "_",
+    "segments": [
+      {"name": "dyscyplina", "type": "closed", "variants": ["ARC", "MEP", "STR"]},
+      {"name": "typ", "type": "freetext", "min_len": 1, "max_len": 10},
+      {"name": "opis", "type": "freetext", "max_len": 30}
+    ]
+  }
+}
