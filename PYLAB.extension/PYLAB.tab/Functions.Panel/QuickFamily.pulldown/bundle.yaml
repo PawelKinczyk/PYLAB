@@ -1,3 +1,4 @@
 title: "Quick\nFamily"
 layout:
   - QuickFamilyAssign
+  - QuickFamilyGenerate
