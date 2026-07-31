@@ -1,0 +1,8 @@
+{
+  "margin_rect_mm": 10,
+  "margin_round_mm": 90,
+  "mark_prefix": "-K-",
+  "insulation_default": true,
+  "default_round_family_name": "",
+  "default_rect_family_name": ""
+}

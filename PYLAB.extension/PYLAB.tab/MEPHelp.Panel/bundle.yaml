@@ -8,4 +8,5 @@ layout:
   - SelectSystemPath
   - ParameterCategoryManager
   - ParamExcelIO
+  - OpeningsCreator
   - AirTerminalCalculator

@@ -1,0 +1,3 @@
+title: "Openings\nCreator"
+tooltip: "Auto-create openings in walls/floors for pipes and ducts. Detects clashes, sizes openings with margin, handles insulation and linked models."
+author: Pawel Kinczyk
